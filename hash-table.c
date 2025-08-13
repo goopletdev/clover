@@ -18,10 +18,10 @@ dictmap init_dictmap(int capacity) {
     return d;
 }
 
-dict init_dict(unsigned int id, char* def, dict* parent) {
+dict init_dict(unsigned int id, char* translation, dict* parent) {
     dict d;
     d.id = id;
-    d.definition = def;
+    d.translation = translation;
     d.parent = parent;
     d.children = init_dictmap(8);
     return d;
@@ -111,17 +111,17 @@ dictmap scale_up_dictmap(dictmap old) {
     return new;
 }
 
-dict push_entry(dict d, u_int_array id, int id_pos, char *def) {
+dict push_entry(dict d, u_int_array id, int id_pos, char *trns) {
     dictmap m = d.children;
     if (id_pos == id.size - 1) {
-        d.children = add(m, init_dict(id[id_pos], def, d));
+        d.children = add(m, init_dict(id[id_pos], trns, d));
         return d;
     }
     int target = hash_index_of(m, id[id_position]);
     if (target > -1) {
-        *m.dicts[target] = push_entry(*m.dicts[target], id, id_pos + 1, def);
+        *m.dicts[target] = push_entry(*m.dicts[target], id, id_pos + 1, trns);
     } else {
-        m = add(m, init_dict(id[id_pos], def, d));
+        m = add(m, init_dict(id[id_pos], trns, d));
     }
     d.children = m;
     return d;

@@ -12,13 +12,20 @@ unsigned int keydown(int key_code, unsigned int chord, int* keys_down) {
         return chord;
     }
 
-    int stenindex = QWERTY_KEY_VALUES[key_code];
+    if (QWERTY_KEY_VALS[key_code]) {
+        return chord | QWERTY_KEY_VALS[key_code];
+    }
+
+    return chord | CANCEL_MASK;
+
+/*    int stenindex = QWERTY_KEY_VALUES[key_code];
 
     if (stenindex == -1) {
         return chord | CANCEL_MASK;
     } 
 
     return chord | (1U << stenindex);
+    */
 }
 
 unsigned int keyup(unsigned int chord, int* keys_down) {

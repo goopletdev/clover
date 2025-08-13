@@ -14,19 +14,24 @@ const unsigned int CANCEL_MASK = 1U << STENO_ORDER_SIZE;
 const unsigned int SEND_MASK = CANCEL_MASK << 1;
 const unsigned int STENO_MASK = (1U << STENO_ORDER_SIZE) - 1;
 
-const int QWERTY_KEY_VALUES[KEY_MAX + 1] = {
-    [0 ... KEY_MAX] = -1,
+const int QWERTY_KEY_VALS[KEY_MAX + 1] = {
+    [0 ... KEY_MAX] = 0,
 
-    [KEY_Q] = 0, [KEY_A] = 1, [KEY_W] = 2, [KEY_S] = 3,
-    [KEY_E] = 4, [KEY_D] = 5, [KEY_R] = 6, [KEY_F] = 7,
+    [KEY_Q] = 1 << 0, [KEY_A] = 1 << 1, 
+    [KEY_W] = 1 << 2, [KEY_S] = 1 << 3,
+    [KEY_E] = 1 << 4, [KEY_D] = 1 << 5, 
+    [KEY_R] = 1 << 6, [KEY_F] = 1 << 7,
 
-    [KEY_C] = 8, [KEY_V] = 9,
-    [KEY_T] = 10, [KEY_G] = 10, [KEY_Y] = 10, [KEY_H] = 10,
-    [KEY_N] = 11, [KEY_M] = 12,
+    [KEY_C] = 1 << 8, [KEY_V] = 1 << 9,
+    [KEY_T] = 1 << 10, [KEY_G] = 1 << 10, 
+    [KEY_Y] = 1 << 10, [KEY_H] = 1 << 10,
+    [KEY_N] = 1 << 11, [KEY_M] = 1 << 12,
 
-    [KEY_U] = 13, [KEY_J] = 14, [KEY_I] = 15, [KEY_K] = 16,
-    [KEY_O] = 17, [KEY_L] = 18, [KEY_P] = 19, [KEY_SEMICOLON] = 20,
-    [KEY_LEFTBRACE] = 21, [KEY_APOSTROPHE] = 22
+    [KEY_U] = 1 << 13, [KEY_J] = 1 << 14, 
+    [KEY_I] = 1 << 15, [KEY_K] = 1 << 16,
+    [KEY_O] = 1 << 17, [KEY_L] = 1 << 18, 
+    [KEY_P] = 1 << 19, [KEY_SEMICOLON] = 1 << 20,
+    [KEY_LEFTBRACE] = 1 << 21, [KEY_APOSTROPHE] = 1 << 22
 };
 
 /*
@@ -117,19 +122,19 @@ char* pretty_chord_fast(unsigned int chord) {
     unsigned int bitmask = 0;
     while (bitmask ^= left_keys & -left_keys) { 
         left_keys ^= bitmask;
-        pretty[position++] = STENO_ORDER(__builtin_ctz(bitmask));
+        pretty[position++] = STENO_ORDER[__builtin_ctz(bitmask)];
     }
     if (separator) {
         pretty[position++] = '-';
     } else {
         while (bitmask ^= middle_keys & -middle_keys) {
             middle_keys ^= bitmask;
-            pretty[position++] = STENO_ORDER(__builtin_ctz(bitmask));
+            pretty[position++] = STENO_ORDER[__builtin_ctz(bitmask)];
         }
     }
     while (bitmask ^= right_keys & -right_keys) {
         right_keys ^= bitmask;
-        pretty[position++] = STENO_ORDER(__builtin_ctz(bitmask));
+        pretty[position++] = STENO_ORDER[__builtin_ctz(bitmask)];
     }
 
     return pretty;
@@ -269,7 +274,9 @@ u_int_array parse_json_key(char* chord, int* start, char terminator) {
             case '/':
                 steno_section = 0;
                 (*start)++;
-                id.arr = (unsigned int*)realloc(id.arr, ++id.size*sizeof(unsigned int));
+                id.arr = (unsigned int*)realloc(
+                    id.arr, ++id.size*sizeof(unsigned int)
+                );
                 continue;
             default:
                 steno_section++;
@@ -279,19 +286,4 @@ u_int_array parse_json_key(char* chord, int* start, char terminator) {
 }
 */
 
-int binary_dictionary_search(dictionary* dict, unsigned int chord, int start, int end) {
-    if (start > end) {
-        return -1;
-    }
-    int midpoint = start + ((end - start) / 2);
-    int comparison = compare_chords(chord, dict[midpoint].id);
-    if (comparison) {
-        if (comparison > 0) {
-            return binary_dictionary_search(dict, chord, midpoint + 1, end);
-        } 
-        return binary_dictionary_search(dict, chord, start, midpoint - 1);
-    }
-    return midpoint;
-}
-
-    
+   
