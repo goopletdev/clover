@@ -21,21 +21,21 @@ struct dictionaryT {
     char* definition;
 };
 
-struct dictionaryTT {
+struct dictT {
     unsigned int id;
     char* definition;
     struct dictionaryTT* parent;
     struct dict_listT children;
 };
 
-struct dict_listT {
+struct dictmapT {
     int size;
     int capacity;
-    struct dictionaryTT** dicts;
+    struct dictT** dicts;
 };
 
-typedef struct dictionaryTT dict;
-typedef struct dict_listT dictmap;
+typedef struct dictT dict;
+typedef struct dictmapT dictmap;
 
 typedef struct dictionaryT dictionary;
 

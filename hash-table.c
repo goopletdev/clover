@@ -75,7 +75,7 @@ int has(dictmap m, unsigned int id) {
     return 0;
 }
 
-dictmap* get(dictmap* m, unsigned int id) {
+dict* get(dictmap* m, unsigned int id) {
     int index = hash_index_of(m, id);
     if (index > -1) {
         return (*dictmap).dicts[index];
@@ -84,7 +84,7 @@ dictmap* get(dictmap* m, unsigned int id) {
 }
 
 dictmap add(dictmap m, dict element) {
-    if (m.capacity / 2 <= ++m.size) {
+    if (m.capacity >> 1 <= ++m.size) {
         m = scale_up_dictmap(m);
     }
     
@@ -111,26 +111,18 @@ dictmap scale_up_dictmap(dictmap old) {
     return new;
 }
 
-/*dict push_entry(dict* d, u_int_array id, int id_position, char *def) {
-    dictmap m = (*d).children;
-
-    if (id_position == id.size - 1) {
-        (*d).children = add(m, init_dict(id[id_position], def, d));
-return
+dict push_entry(dict d, u_int_array id, int id_pos, char *def) {
+    dictmap m = d.children;
+    if (id_pos == id.size - 1) {
+        d.children = add(m, init_dict(id[id_pos], def, d));
+        return d;
     }
-
-    int target = hash_index_of(m, id);
-
+    int target = hash_index_of(m, id[id_position]);
     if (target > -1) {
-        *(m.dicts[target]) = push_entry(*(m.dicts[target]), id, id_position + 1, def);
+        *m.dicts[target] = push_entry(*m.dicts[target], id, id_pos + 1, def);
     } else {
-        m = add(m, init_dict(id[id_position], def, 
-
-    for (int i = 0; i < id.size; i++) {
-        target = hash_index_of(*m, id);
-        if (target > -1) {
-
-        if (has(m, id[i])) {
-*/
-        
-
+        m = add(m, init_dict(id[id_pos], def, d));
+    }
+    d.children = m;
+    return d;
+}
