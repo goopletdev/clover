@@ -174,7 +174,7 @@ dict* parse_dictionary (const char* file_path) {
 
     return d;
 }
-
+/*
 int main(int argc, char **argv) {
     dict** dict_list = (dict**)malloc((argc - 1) * sizeof(dict*));
 
@@ -186,14 +186,6 @@ int main(int argc, char **argv) {
         print_entries(dict_list[i], 0);
     }
 
-    /*dictmap* map = dict_list[0]->children;
-
-    dict* reference_dict = get(map, parse_chord("PHAUF"));
-    print_entries(reference_dict, 0); 
-    printf("Size: %i; Capacity: %i", map->size, map->capacity);
-    */
-
-    //print_entries(parse_dictionary("./assets/test-dictionary.json"), 0);
-    
     return 0;
 }
+*/

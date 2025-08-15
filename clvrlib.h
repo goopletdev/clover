@@ -37,6 +37,17 @@ typedef struct uint_arr {
     int size;
 } uint_arr;
 
+struct config {
+    dict* dictionary;
+    char** listeners;
+};
+
+struct stroke {
+    unsigned int chord;
+    unsigned int was_deleted;
+    char* translation;
+};
+
 int has(dictmap* m, unsigned int id);
 int hash_index_of(dictmap* m, unsigned int id);
 dictmap* scale_up_dictmap(dictmap* old);
@@ -57,5 +68,8 @@ int steno_index_of(char value, int start);
 int compare_chords(unsigned int chord1, unsigned int chord2);
 unsigned int parse_chord(char* chord);
 
-#endif // CLVR_HEADER_H
+dict* parse_dictionary(const char* file_path);
 
+void event_loop(struct config cf);
+
+#endif // CLVR_HEADER_H

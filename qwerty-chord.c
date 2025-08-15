@@ -30,10 +30,44 @@ unsigned int keyup(unsigned int chord, int* keys_down) {
     return chord;
 }
 
-void send_chord(unsigned int chord) {
-    printf("\r%s\n", paper_tape(chord));
+void send_chord(unsigned int chord, struct config cf) {
+    printf("\r%s | ", paper_tape(chord));
+    dict* entry = get(cf.dictionary->children, chord);
+    char* trns = entry ? entry->translation : NULL;
+    printf("%s\n", trns ? trns : pretty_chord(chord));
 }
 
+void event_loop(struct config cf) {
+    int fd;
+    struct input_event event;
+    unsigned int chord = 0;
+    int keys_down = 0;
+
+    fd = open(cf.listeners[0], O_RDONLY);
+
+    for (;;) {
+        read(fd, &event, sizeof(event));
+        if (event.type != 1) {
+            continue;
+        }
+        putchar('\b');
+        switch(event.value) {
+            case 0:
+                chord = keyup(chord, &keys_down);
+                if (chord & SEND_MASK) {
+                    send_chord(chord & (~SEND_MASK), cf);
+                    chord = 0U;
+                }
+                break;
+            case 1:
+                chord = keydown(event.code, chord, &keys_down);
+                break;
+            default:
+                continue;
+        }
+    }
+}
+/*
 int main(int argc, char **argv) {
     int fd;
     struct input_event event;
@@ -69,7 +103,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-
+*/
 
 
 

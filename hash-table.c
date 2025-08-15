@@ -101,7 +101,7 @@ dictmap* add(dictmap* m, dict* element) {
         if (exists->translation) {
             printf("collision error: %s\n", pretty_chord(element->id));
             printf(
-                "Translation old: %s\nTranslation new: %s\n",
+                "Translation old: %s\nTranslation new: %s\n\n",
                 get(m, element->id)->translation,
                 element->translation
             );

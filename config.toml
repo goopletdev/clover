@@ -1,7 +1,8 @@
 # Development config file
 
 event_listeners = [
-  "/dev/input/event2",
+#  "/dev/input/event2", 
+  "/dev/input/event19",
 ]
 
 steno_dictionaries = [
