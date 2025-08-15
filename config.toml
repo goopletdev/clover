@@ -1,0 +1,9 @@
+# Development config file
+
+event_listeners = [
+  "/dev/input/event2",
+]
+
+steno_dictionaries = [
+  "./assets/lapwing-base.json",
+]
