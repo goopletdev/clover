@@ -5,22 +5,22 @@
 
 #define MAX_LINE_LEN 256
 
-void print_entries(dict entry, int depth) {
+void print_entries(dict* entry, int depth) {
     for (int i = 0; i < depth; i++) {
         printf("\t");
     }
-    printf("%i: %s\n", entry.id, entry.translation);
-    int i = 0;
-    for (; i < entry.capacity; i++) {
-        if (!entry.children[i]) {
+    printf("%s: %s\n", pretty_chord(entry->id), entry->translation);
+    for (int j = 0; j < depth; j++) {
+        printf("\t");
+    }
+    printf(" > total entries: %i\n", entry->children->size);
+    
+    for (int i = 0; i < entry->children->capacity; i++) {
+        if (!entry->children->dicts[i]) {
             continue;
         }
-        print_entries(entry.children[i], depth + 1);
+        print_entries(entry->children->dicts[i], depth + 1);
     }
-    for (int i = 0; i < depth; i++) {
-        printf("\t");
-    }
-    printf(" > total entries: %i\n", i);
 }
 
 json_entry parse_line(char *line) {
@@ -111,7 +111,7 @@ json_entry parse_line(char *line) {
     return entry;
 }
 
-dict parse_dictionary (const char* file_path) {
+dict* parse_dictionary (const char* file_path) {
     FILE *file_pointer = fopen(file_path, "r");
     char line_buffer[MAX_LINE_LEN];
     
@@ -120,7 +120,7 @@ dict parse_dictionary (const char* file_path) {
         exit(1);
     }
 
-    dict d = init_dict(0, NULL, NULL);
+    dict* d = init_dict(0, NULL, NULL);
     json_entry entry;
     
     for (int i = 0; fgets(line_buffer, MAX_LINE_LEN, file_pointer) != NULL; i++) {
@@ -137,17 +137,28 @@ dict parse_dictionary (const char* file_path) {
 
     fclose(file_pointer);
 
-    return dict;
+    return d;
 }
 
-
- 
 int main(int argc, char **argv) {
-    dictionary* dict_list = (dictionary*)malloc((argc - 1) * sizeof(dictionary));
+    dict** dict_list = (dict**)malloc((argc - 1) * sizeof(dict*));
 
     for (int i = 1; i < argc; i++) {
         dict_list[i-1] = parse_dictionary(argv[i]);
     }
+
+    for (int i = 0; i < argc - 1; i++) {
+        print_entries(dict_list[i], 0);
+    }
+
+    /*dictmap* map = dict_list[0]->children;
+
+    dict* reference_dict = get(map, parse_chord("PHAUF"));
+    print_entries(reference_dict, 0); 
+    printf("Size: %i; Capacity: %i", map->size, map->capacity);
+    */
+
+    //print_entries(parse_dictionary("./assets/test-dictionary.json"), 0);
     
     return 0;
 }

@@ -172,15 +172,9 @@ int compare_chords(unsigned int chord1, unsigned int chord2) {
         if (comparison = (bitmask & chord1) - (bitmask & chord2)) {
             bitmask = STENO_MASK & ~((bitmask << 1) - 1);
             if (comparison > 0) {
-                if (bitmask & chord2) {
-                    return -1;
-                }
-                return 1;
+                return bitmask & chord2 ? -1 : 1;
             }
-            if (bitmask & chord1) {
-                return 1;
-            }
-            return -1;
+            return bitmask & chord1 ? 1 : -1;
         }
     }
     return 0;
@@ -225,7 +219,7 @@ uint_arr parse_pretty_chord(char* chord, int* start, char terminator) {
                     check_memory_allocation(id.arr, 1);
                     break;
                 default:
-                    printf("Error parsing chord \"%s\"\n", *chord);
+                    printf("Error parsing chord \"%s\"\n", chord);
                     exit(1);
             }
         } else {

@@ -16,7 +16,7 @@ dictionary init_dict(unsigned int id, char* definition, dictionary* parent) {
 /**
  * this function assumes that all entries are being added in proper steno order
  * */
-dictionary push_entry(dictionary dict, u_int_array id, int id_position, char *definition) {
+dictionary push_entry(dictionary dict, uint_arr id, int id_position, char *definition) {
     // get last child
     dictionary *last_child;
     if (dict.size <= 0 || ((last_child = &(dict.children[dict.size - 1]))->id != id.arr[id_position])) {

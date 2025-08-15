@@ -30,10 +30,7 @@ unsigned int keydown(int key_code, unsigned int chord, int* keys_down) {
 
 unsigned int keyup(unsigned int chord, int* keys_down) {
     if (--(*keys_down) == 0) {
-        if (!(chord & CANCEL_MASK)) {
-            return chord | SEND_MASK;
-        }
-        return 0U;
+        return !(chord & CANCEL_MASK) ? chord | SEND_MASK : 0U;
     } else if (*keys_down < 0) {
         *keys_down = 0;
         return 0U;

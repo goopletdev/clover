@@ -6,17 +6,19 @@
 #define RIGHT_START 13
 
 extern const int STENO_ORDER_SIZE;
+extern const unsigned int L_KEY_MASK;
 extern const unsigned int M_KEY_MASK;
 extern const unsigned int R_KEY_MASK;
 extern const unsigned int CANCEL_MASK;
 extern const unsigned int SEND_MASK;
+extern const unsigned int STENO_MASK;
 extern const unsigned int QWERTY_KEY_VALS[];
 
 struct dictT {
     unsigned int id;
     char* translation;
-    struct dictionaryTT* parent;
-    struct dict_listT children;
+    struct dictT* parent;
+    struct dictmapT* children;
 };
 
 struct dictmapT {
