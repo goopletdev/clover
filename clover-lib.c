@@ -103,40 +103,40 @@ char* pretty_chord_slow(unsigned int chord) {
     return pretty;
 }
 
-char* pretty_chord_fast(unsigned int chord) {
+char* pretty_chord(unsigned int chord) {
     unsigned int right_keys = chord & R_KEY_MASK;
     unsigned int middle_keys = chord & M_KEY_MASK;
     unsigned int left_keys = chord & L_KEY_MASK;
-    int separator = 0;
-    if (right_keys && !middle_keys) {
-        separator++;
-    }
+    int separator = right_keys && !middle_keys ? 1 : 0;
 
     char* pretty = (char*)malloc(
-        (__builtin_popcount(chord) + separator) * sizeof(char)
+        (__builtin_popcount(chord) + separator + 1) * sizeof(char)
     );
 
     check_memory_allocation(pretty, 1);
 
     int position = 0;
-    unsigned int bitmask = 0;
-    while (bitmask ^= left_keys & -left_keys) { 
+    unsigned int bitmask;
+    while (bitmask = left_keys & -left_keys) { 
         left_keys ^= bitmask;
         pretty[position++] = STENO_ORDER[__builtin_ctz(bitmask)];
+
     }
     if (separator) {
         pretty[position++] = '-';
     } else {
-        while (bitmask ^= middle_keys & -middle_keys) {
+        while (bitmask = middle_keys & -middle_keys) {
             middle_keys ^= bitmask;
             pretty[position++] = STENO_ORDER[__builtin_ctz(bitmask)];
         }
     }
-    while (bitmask ^= right_keys & -right_keys) {
+
+    while (bitmask = right_keys & -right_keys) {
         right_keys ^= bitmask;
         pretty[position++] = STENO_ORDER[__builtin_ctz(bitmask)];
     }
 
+    pretty[position] = '\0';
     return pretty;
 }
 
@@ -144,11 +144,7 @@ char* pretty_chord_fast(unsigned int chord) {
 char* paper_tape(unsigned int chord) {
     char* tape = (char*)malloc(STENO_ORDER_SIZE * sizeof(char));
     for (int i = 0; i < STENO_ORDER_SIZE; i++) {
-        if (chord & (1U << i)) {
-            tape[i] = STENO_ORDER[i];
-        } else {
-            tape[i] = ' ';
-        }
+        tape[i] = chord & (1U << i) ? STENO_ORDER[i] : ' ';
     }
     return tape;
 }
@@ -164,12 +160,7 @@ int steno_index_of(char value, int start) {
 
 void print_bits(unsigned int arr) {
     for (int i = 0; i < 8 * sizeof(unsigned int); i++) {
-        unsigned int mask = 1U << i;
-        if (mask & arr) {
-            printf("1");
-        } else {
-            printf("0");
-        }
+        printf("%i", (1U << i) & arr ? 1 : 0);
     }
     printf("\n");
 }
