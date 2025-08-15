@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINE_LEN 256
+
+typedef struct json_entry {
+    uint_arr key;
+    char* value;
+} json_entry;
 
 void print_entries(dict* entry, int depth) {
     for (int i = 0; i < depth; i++) {
@@ -21,6 +25,37 @@ void print_entries(dict* entry, int depth) {
         }
         print_entries(entry->children->dicts[i], depth + 1);
     }
+}
+
+uint_arr parse_pretty_chord(char* chord, int* start, char terminator) {
+    uint_arr id;
+    id.size = 1;
+    id.arr = (unsigned int*)calloc(id.size, sizeof(unsigned int));
+    check_memory_allocation(id.arr, 1);
+
+    int search_start = 0;
+    for (char key; (key = chord[*start]) != terminator; (*start)++) {
+        search_start = steno_index_of(key, search_start);
+        if (search_start == -1) {
+            switch (key) {
+                case '-':
+                    search_start = RIGHT_START;
+                    break;
+                case '/':
+                    search_start = 0;
+                    id.arr = (unsigned int*)realloc(id.arr, ++id.size * sizeof(unsigned int));
+                    check_memory_allocation(id.arr, 1);
+                    break;
+                default:
+                    printf("Error parsing chord \"%s\"\n", chord);
+                    exit(1);
+            }
+        } else {
+            id.arr[id.size - 1] |= 1U << search_start++;
+        }
+    }
+
+    return id;
 }
 
 json_entry parse_line(char *line) {

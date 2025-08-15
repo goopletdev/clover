@@ -1,4 +1,4 @@
-#include <clvrlib.h>
+#include "./clvrlib.h"
 #include <linux/input.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,29 +78,6 @@ int get_chord_size(unsigned int n) {
         count++;
     }
     return count;
-}
-
-char* pretty_chord_slow(unsigned int chord) {
-    char* pretty = (char*)calloc(STENO_ORDER_SIZE, sizeof(char));
-    check_memory_allocation(pretty, 1);
-
-    int key_index = 0;
-    for (int i = 0; i < STENO_ORDER_SIZE; i++) {
-        if (chord & (1U << i)) {
-            pretty[key_index++] = STENO_ORDER[i];
-        } else if (
-                i == RIGHT_START - 1
-                && chord & R_KEY_MASK
-                && chord & (~M_KEY_MASK)
-        ) {
-            pretty[key_index++] = '-';
-        }
-    }
-
-    pretty = (char*)realloc(pretty, sizeof(char) * (key_index + 1));
-    check_memory_allocation(pretty, 1);
-
-    return pretty;
 }
 
 char* pretty_chord(unsigned int chord) {
@@ -197,37 +174,6 @@ int compare_chords_fast(unsigned int chord1, unsigned int chord2) {
         return 1;
     }
     return -1;
-}
-
-uint_arr parse_pretty_chord(char* chord, int* start, char terminator) {
-    uint_arr id;
-    id.size = 1;
-    id.arr = (unsigned int*)calloc(id.size, sizeof(unsigned int));
-    check_memory_allocation(id.arr, 1);
-
-    int search_start = 0;
-    for (char key; (key = chord[*start]) != terminator; (*start)++) {
-        search_start = steno_index_of(key, search_start);
-        if (search_start == -1) {
-            switch (key) {
-                case '-':
-                    search_start = RIGHT_START;
-                    break;
-                case '/':
-                    search_start = 0;
-                    id.arr = (unsigned int*)realloc(id.arr, ++id.size * sizeof(unsigned int));
-                    check_memory_allocation(id.arr, 1);
-                    break;
-                default:
-                    printf("Error parsing chord \"%s\"\n", chord);
-                    exit(1);
-            }
-        } else {
-            id.arr[id.size - 1] |= 1U << search_start++;
-        }
-    }
-
-    return id;
 }
 
 unsigned int parse_chord(char* chord) {

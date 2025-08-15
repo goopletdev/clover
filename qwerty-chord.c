@@ -1,4 +1,4 @@
-#include <clvrlib.h>
+#include "./clvrlib.h"
 #include <fcntl.h>
 #include <linux/input.h>
 #include <stdio.h>
@@ -17,20 +17,11 @@ unsigned int keydown(int key_code, unsigned int chord, int* keys_down) {
     }
 
     return chord | CANCEL_MASK;
-
-/*    int stenindex = QWERTY_KEY_VALUES[key_code];
-
-    if (stenindex == -1) {
-        return chord | CANCEL_MASK;
-    } 
-
-    return chord | (1U << stenindex);
-    */
 }
 
 unsigned int keyup(unsigned int chord, int* keys_down) {
     if (--(*keys_down) == 0) {
-        return !(chord & CANCEL_MASK) ? chord | SEND_MASK : 0U;
+        return chord & CANCEL_MASK ? 0U : chord | SEND_MASK;
     } else if (*keys_down < 0) {
         *keys_down = 0;
         return 0U;
@@ -39,19 +30,26 @@ unsigned int keyup(unsigned int chord, int* keys_down) {
     return chord;
 }
 
-int main(int arc, char **argv) {
+void send_chord(unsigned int chord) {
+    printf("\r%s\n", paper_tape(chord));
+}
+
+int main(int argc, char **argv) {
     int fd;
     struct input_event event;
-    int return_code;
-    unsigned int chord;
+    unsigned int chord = 0;
     int keys_down = 0;
 
-    fd = open(argv[1], O_RDONLY);
+    fd = open("/dev/input/event2", O_RDONLY);
+    //fd = open(argv[1], O_RDONLY);
+    //printf("\n");
+
     for (;;) {
         read(fd, &event, sizeof(event));
         if (event.type != 1) {
             continue;
-        }
+        } 
+        printf("\b");
         switch (event.value) {
             case 0:
                 chord = keyup(chord, &keys_down);
@@ -67,6 +65,8 @@ int main(int arc, char **argv) {
                 continue;
         }
     }
+
+    return 0;
 }
 
 

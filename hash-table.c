@@ -26,15 +26,10 @@ dict* init_dict(unsigned int id, char* translation, dict* parent) {
 }
 
 int hash_function(dictmap* m, unsigned int id) {
-    //int trailing = __builtin_ctz(m.capacity);
     int hash = 0;
     for (int trailing = __builtin_ctz(m->capacity); id; id >>= trailing) {
         hash ^= id;
     }
-    /*for (int i = 0; i < STENO_ORDER_SIZE; i += trailing) {
-        hash ^= (id >> i);
-    }*/
-
     return hash % m->capacity;
 }
 
@@ -55,7 +50,6 @@ int linear_probe_null(dictmap* m, int start) {
 
 
 int hash_index_of(dictmap* m, unsigned int id) {
-    //printf("In hash_index_of(). Map capacity: %i\n", m->capacity);
     int index = hash_function(m, id);
     for (int i = index; i < m->capacity; i++) {
         if (m->dicts[i]) {
@@ -144,15 +138,13 @@ dict* push_entry(dict* d, uint_arr id, int id_pos, char *translation) {
         d->children = add(m, init_dict(id.arr[id_pos], translation, d));
         return d;
     }
-    int target = hash_index_of(m, id.arr[id_pos]);
-    if (target > -1) {
-        m->dicts[target] = push_entry(
-            m->dicts[target], id, id_pos + 1, translation
-        );
+    dict* target = get(m, id.arr[id_pos]);
+    if (target) {
+        target = push_entry(target, id, id_pos + 1, translation);
     } else {
-        dict* new_entry = init_dict(id.arr[id_pos], NULL, d);
-        new_entry = push_entry(new_entry, id, id_pos + 1, translation);
-        m = add(m, new_entry);
+        target = init_dict(id.arr[id_pos], NULL, d);
+        target = push_entry(target, id, id_pos + 1, translation);
+        m = add(m, target);
     }
     d->children = m;
     return d;

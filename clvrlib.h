@@ -1,6 +1,8 @@
 #ifndef CLVR_HEADER_H
 #define CLVR_HEADER_H
-
+//for file handling:
+#define MAX_LINE_LEN 256
+//steno consts:
 #define STENO_ORDER "#STKPWHRAO*EUFRPBLGTSDZ"
 #define MIDDLE_START 8
 #define RIGHT_START 13
@@ -35,11 +37,6 @@ typedef struct uint_arr {
     int size;
 } uint_arr;
 
-typedef struct json_entry {
-    uint_arr key;
-    char* value;
-} json_entry;
-
 int has(dictmap* m, unsigned int id);
 int hash_index_of(dictmap* m, unsigned int id);
 dictmap* scale_up_dictmap(dictmap* old);
@@ -58,7 +55,6 @@ char* paper_tape(unsigned int chord);
 
 int steno_index_of(char value, int start);
 int compare_chords(unsigned int chord1, unsigned int chord2);
-uint_arr parse_pretty_chord(char *chord, int *start, char terminator);
 unsigned int parse_chord(char* chord);
 
 #endif // CLVR_HEADER_H
