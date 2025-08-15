@@ -28,15 +28,25 @@ struct dictmapT {
 typedef struct dictT dict;
 typedef struct dictmapT dictmap;
 
-typedef struct u_int_array {
+typedef struct uint_arr {
     unsigned int *arr;
     int size;
-} u_int_array;
+} uint_arr;
 
 typedef struct json_entry {
-    u_int_array key;
+    uint_arr key;
     char* value;
 } json_entry;
+
+int has(dictmap* m, unsigned int id);
+int hash_index_of(dictmap* m, unsigned int id);
+dictmap* scale_up_dictmap(dictmap* old);
+dict* init_dict(unsigned int id, char* translation, dict* parent);
+dictmap* init_dictmap(int capacity);
+dict* get(dictmap* m, unsigned int id);
+dictmap* add(dictmap* m, dict* element);
+dictmap* scale_up_dictmap(dictmap* old);
+dict* push_entry(dict* d, uint_arr id, int id_pos, char *translation);
 
 void check_memory_allocation(void* ptr, int exit_code);
 void print_bits(unsigned int arr);
@@ -46,7 +56,8 @@ char* paper_tape(unsigned int chord);
 
 int steno_index_of(char value, int start);
 int compare_chords(unsigned int chord1, unsigned int chord2);
-u_int_array parse_pretty_chord(char *chord, int *start, char terminator);
+uint_arr parse_pretty_chord(char *chord, int *start, char terminator);
+unsigned int parse_chord(char* chord);
 
 #endif // CLVR_HEADER_H
 

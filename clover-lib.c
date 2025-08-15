@@ -14,7 +14,7 @@ const unsigned int CANCEL_MASK = 1U << STENO_ORDER_SIZE;
 const unsigned int SEND_MASK = CANCEL_MASK << 1;
 const unsigned int STENO_MASK = (1U << STENO_ORDER_SIZE) - 1;
 
-const int QWERTY_KEY_VALS[KEY_MAX + 1] = {
+const unsigned int QWERTY_KEY_VALS[KEY_MAX + 1] = {
     [0 ... KEY_MAX] = 0,
 
     [KEY_Q] = 1 << 0, [KEY_A] = 1 << 1, 
@@ -80,7 +80,7 @@ int get_chord_size(unsigned int n) {
     return count;
 }
 
-char* pretty_chord(unsigned int chord) {
+char* pretty_chord_slow(unsigned int chord) {
     char* pretty = (char*)calloc(STENO_ORDER_SIZE, sizeof(char));
     check_memory_allocation(pretty, 1);
 
@@ -214,8 +214,8 @@ int compare_chords_fast(unsigned int chord1, unsigned int chord2) {
     return -1;
 }
 
-u_int_array parse_pretty_chord(char* chord, int* start, char terminator) {
-    u_int_array id;
+uint_arr parse_pretty_chord(char* chord, int* start, char terminator) {
+    uint_arr id;
     id.size = 1;
     id.arr = (unsigned int*)calloc(id.size, sizeof(unsigned int));
     check_memory_allocation(id.arr, 1);
@@ -245,10 +245,26 @@ u_int_array parse_pretty_chord(char* chord, int* start, char terminator) {
     return id;
 }
 
+unsigned int parse_chord(char* chord) {
+    unsigned int parsed_chord = 0;
+    int search_start = 0;
+    char key;
+    for (int i=0; key = chord[i]; i++) {
+        if (key == '-') {
+            search_start = RIGHT_START;
+        } else {
+            search_start = steno_index_of(key, search_start);
+            parsed_chord |= 1U << search_start++;
+        }
+    }
+
+    return parsed_chord;
+}
+
 /*
     // this is janky, compare speed to parse_pretty_chord later
-u_int_array parse_json_key(char* chord, int* start, char terminator) {
-    u_int_array id;
+uint_arr parse_json_key(char* chord, int* start, char terminator) {
+    uint_arr id;
     id.size = 1;
     id.arr = (unsigned int*)calloc(id.size, sizeof(unsigned int));
     check_memory_allocation(id.arr, 1);
