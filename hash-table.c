@@ -132,20 +132,17 @@ dictmap* scale_up_dictmap(dictmap* old) {
     return new;
 }
 
-dict* push_entry(dict* d, uint_arr id, int id_pos, char *translation) {
-    dictmap* m = d->children;
-    if (id_pos == id.size - 1) {
-        d->children = add(m, init_dict(id.arr[id_pos], translation, d));
-        return d;
+dict* push_entry(dict* d, unsigned int* id, int id_size, char *translation) {
+    dict* target = get(d->children, id[0]);
+    if (!target) {
+        target = init_dict(id[0], NULL, d);
+        d->children = add(d->children, target);
     }
-    dict* target = get(m, id.arr[id_pos]);
-    if (target) {
-        target = push_entry(target, id, id_pos + 1, translation);
+    if (id_size > 1) {
+        target = push_entry(target, &id[1], id_size - 1, translation);
     } else {
-        target = init_dict(id.arr[id_pos], NULL, d);
-        target = push_entry(target, id, id_pos + 1, translation);
-        m = add(m, target);
+        target->translation = translation;
     }
-    d->children = m;
+
     return d;
 }
