@@ -1,6 +1,6 @@
 # dependencies:
 test/Unity
-assets/
+assets/*
 
 # compiled executables:
 parse-chord
@@ -9,3 +9,6 @@ test/clover-hash-test
 
 # other:
 .vscode
+
+# testing exceptions:
+!assets/test-dictionary.json
