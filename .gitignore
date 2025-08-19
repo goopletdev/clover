@@ -1,3 +1,11 @@
+# dependencies:
+test/Unity
+assets/
+
+# compiled executables:
 parse-chord
-old-files
-assets
+test/clover-chord-test
+test/clover-hash-test
+
+# other:
+.vscode
