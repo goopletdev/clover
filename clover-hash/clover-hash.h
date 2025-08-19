@@ -7,8 +7,8 @@
 // as well as for convenient error messages
 
 /**
- * Dictionary object with a reference to its parent,
- * child entries, and a translation.
+ * Dictionary object that holds a translation of a steno stroke,
+ * with a reference to its parent and child entries
  */
 typedef struct clover__dictT clover_dict;
 
@@ -21,28 +21,28 @@ typedef struct clover__dictT clover_dict;
  * Getter;
  * Returns the id of a given entry
  */
-unsigned int clover_dict_id(clover_dict* d);
+const unsigned int clover_dict_id(clover_dict* d);
 
 /**
  * Getter;
  * Returns the translation of a given entry
  */
-char* clover_dict_translation(clover_dict* d);
+const char* clover_dict_translation(clover_dict* d);
 
 /**
  * Getter;
  * returns number of child entries
  */
-int clover_dict_size(clover_dict* d);
+const int clover_dict_size(clover_dict* d);
 
 /**
  * Getter;
  * Returns pointer to given entry's parent
  */
-clover_dict* clover_dict_parent(clover_dict* d);
+const clover_dict* clover_dict_parent(clover_dict* d);
 
 // ##################
-// #  /getters end  #
+// #  dict methods  #
 // ##################
 
 /**
@@ -69,7 +69,7 @@ int clover_has(clover_dict* d, unsigned int id);
 clover_dict* clover_get(clover_dict* d, unsigned int id);
 
 /**
- * Recursively pushes an entry, then returns given clover_dict pointer
+ * Recursively adds a multi-stroke steno translation
  */
 clover_dict* clover_push_entry(
     clover_dict* d,

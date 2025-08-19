@@ -24,19 +24,19 @@ clover__dictmap* clover__scale_up_dictmap(clover__dictmap* old);
 // #    getters:    #
 // ##################
 
-int clover_dict_size(clover_dict* d) {
+const int clover_dict_size(clover_dict* d) {
     return d->children->size;
 }
 
-unsigned int clover_dict_id(clover_dict* d) {
+const unsigned int clover_dict_id(clover_dict* d) {
     return d->id;
 }
 
-char* clover_dict_translation(clover_dict* d) {
+const char* clover_dict_translation(clover_dict* d) {
     return d->translation;
 }
 
-clover_dict* clover_dict_parent(clover_dict* d) {
+const clover_dict* clover_dict_parent(clover_dict* d) {
     return d->parent;
 }
 
