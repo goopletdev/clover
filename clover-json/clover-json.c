@@ -25,7 +25,6 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
     int c;
     while ((c = fgetc(fp)) != EOF) {
         if (is_escaped) {
-            printf("escaped\n");
             is_escaped = 0;
             if (keyval_pos == 0 || keyval_pos == 2) {
                 continue;
@@ -50,18 +49,14 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
                 val_buffer[val_position++] = (char)c;
             }
         } else if ((char)c == '"') {
-            printf("quote\n");
             if (++keyval_pos == 4) {
                 keyval_pos = 0;
                 key_position = 0;
                 val_position = 0;
                 int size = 0;
                 unsigned int* id;
-                printf("Parsing chord %s...\n", key_buffer);
                 id = clover_parse_compound_chord(key_buffer, &size);
-                printf("Pushing entry %s...\n", val_buffer);
                 clover_push_entry(d, id, size, val_buffer);
-                printf("Clearing buffers...\n");
                 memset(key_buffer, 0, CHAR_BUFFER_SIZE * sizeof(char));
                 memset(val_buffer, 0, CHAR_BUFFER_SIZE * sizeof(char));
             }

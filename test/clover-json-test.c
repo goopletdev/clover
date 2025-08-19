@@ -14,7 +14,7 @@ void clvrParseDict_shouldParseFromJsonFile(void) {
     clover_dict* dict = clover_parse_dictionary(file_path);
 
     TEST_ASSERT_EQUAL(24, clover_dict_size(dict));
-    char* translation = clover_dict_translation(
+    const char* translation = clover_dict_translation(
         clover_get(dict, clover_parse_chord("#"))
     );
     TEST_ASSERT_EQUAL_STRING("=repeat_last_translation", translation);

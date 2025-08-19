@@ -6,6 +6,7 @@ assets/*
 parse-chord
 test/clover-chord-test
 test/clover-hash-test
+test/clover-json-test
 
 # other:
 .vscode
