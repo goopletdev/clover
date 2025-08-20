@@ -140,6 +140,7 @@ clover_dict* clover_get(clover_dict* d, unsigned int id) {
 clover__dictmap* clover__add(clover__dictmap* m, clover_dict* element) {
     if (m->capacity >> 1 <= ++m->size) {
         m = clover__scale_up_dictmap(m);
+        m->size++;
     }
 
     clover_dict* exists = clover__get_from_map(m, element->id);

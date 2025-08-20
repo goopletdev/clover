@@ -18,8 +18,3 @@ Also, `assets/test-dictionary.json` is currently taken from the first several en
 Document code with Doxygen tags/Javadoc-style doc tags
 
 Consider incorporating https://zserge.com/jsmn/ for json parsing
-
-### todo:
-off-by-one error in clover-json-test
-implement iterator function for clover_dict
-should make debugging off-by-one error easier
