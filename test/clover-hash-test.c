@@ -13,8 +13,6 @@ void tearDown(void) {
 
 void clvrInitDict_shouldReturnStructInstancePointer(void) {
     clover_dict* dict = clover_init_dict(0, NULL, NULL);
-    unsigned int ids[0];
-    ids[0] = 1U;
     TEST_ASSERT_EQUAL(0, clover_dict_id(dict));
     TEST_ASSERT_EQUAL(NULL, clover_dict_parent(dict));
 }

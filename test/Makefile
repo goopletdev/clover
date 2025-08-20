@@ -1,8 +1,27 @@
-clover-chord-test: clover-chord-test.c Unity/src/unity.c ../clover-chord/clover-chord.c
-	gcc -g -o clover-chord-test clover-chord-test.c Unity/src/unity.c ../clover-chord/clover-chord.c -I.
+CC = gcc
+CFLAGS = -Wall -Wextra -Wno-override-init -g -std=c99 -I.
+COMMON_SOURCES = Unity/src/unity.c \
+                 ../clover-chord/clover-chord.c
 
-clover-hash-test: clover-hash-test.c Unity/src/unity.c ../clover-hash/clover-hash.c ../clover-chord/clover-chord.c
-	gcc -o clover-hash-test clover-hash-test.c Unity/src/unity.c ../clover-hash/clover-hash.c ../clover-chord/clover-chord.c -I.
+TESTS = clover-chord-test clover-hash-test clover-json-test
 
-clover-json-test: clover-json-test.c Unity/src/unity.c ../clover-json/clover-json.c ../clover-hash/clover-hash.c ../clover-chord/clover-chord.c
-	gcc -o clover-json-test clover-json-test.c Unity/src/unity.c ../clover-json/clover-json.c ../clover-hash/clover-hash.c ../clover-chord/clover-chord.c -I.
+all: $(TESTS)
+
+clover-chord-test: clover-chord-test.c $(COMMON_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $^
+
+clover-hash-test: clover-hash-test.c ../clover-hash/clover-hash.c $(COMMON_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $^
+
+clover-json-test: clover-json-test.c ../clover-json/clover-json.c ../clover-hash/clover-hash.c $(COMMON_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $^
+
+test: $(TESTS)
+	./clover-chord-test
+	./clover-hash-test
+	./clover-json-test
+
+clean:
+	rm -f $(TESTS)
+
+.PHONY: all test clean
