@@ -1,7 +1,12 @@
-clover: clover.c parse-to-hash.c hash-table.c qwerty-chord.c clover-lib.c
-	gcc -o clover clover.c parse-to-hash.c hash-table.c qwerty-chord.c clover-lib.c -I.
-parse-debug: parse-to-hash.c hash-table.c clover-lib.c
-	gcc -g -o parse-debug parse-to-hash.c hash-table.c clover-lib.c -I.
+CC = gcc
+CFLAGS = -Wall -Wextra -Wno-override-init -g -std=c99 -I.
+TARGET = clover
+SOURCES = clover.c \
+          clover-chord/clover-chord.c \
+          clover-event-listener/clover-event-listener.c \
+          clover-hash/clover-hash.c \
+          clover-json/clover-json.c
 
-qwerty-debug: qwerty-chord.c clover-lib.c
-	gcc -g -o qwerty-debug qwerty-chord.c clover-lib.c -I.
+$(TARGET): $(SOURCES)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SOURCES)
+
