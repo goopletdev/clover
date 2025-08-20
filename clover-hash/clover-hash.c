@@ -69,11 +69,11 @@ clover_dict* clover_init_dict(
 }
 
 int clover__hash_function(clover__dictmap* m, unsigned int id) {
-    int hash = 0;
+    unsigned int hash = 0;
     for (int trailing = __builtin_ctz(m->capacity); id; id >>= trailing) {
         hash ^= id;
     }
-    return hash % m->capacity;
+    return (int)(hash % m->capacity);
 }
 
 int clover__linear_probe_null(clover__dictmap* m, int start) {
