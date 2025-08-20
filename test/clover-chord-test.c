@@ -40,6 +40,7 @@ void clvrParseChord_shouldParseToUInt(void) {
     TEST_ASSERT_EQUAL(165513U, clover_parse_chord("#KRO*PL"));
     TEST_ASSERT_EQUAL(8192U, clover_parse_chord("-F"));
     TEST_ASSERT_EQUAL(163860U, clover_parse_chord("TP-PL"));
+    TEST_ASSERT_EQUAL(4194304U, clover_parse_chord("-Z"));
 }
 
 void clvrParseCompoundChord_shouldHandleArbitraryChordSizes(void) {
@@ -55,6 +56,18 @@ void clvrParseCompoundChord_shouldHandleArbitraryChordSizes(void) {
     chord = clover_parse_compound_chord(key, &size);
     TEST_ASSERT_EQUAL(1, size);
     TEST_ASSERT_EQUAL(clover_parse_chord("#"), chord[0]);
+
+    size = 0;
+    key = "SRE/TER/KWREU/TPHAEUR/KWREU/KWRAPB/-Z";
+    chord = clover_parse_compound_chord(key, &size);
+    TEST_ASSERT_EQUAL(7, size);
+    TEST_ASSERT_EQUAL(clover_parse_chord("SRE"), chord[0]);
+    TEST_ASSERT_EQUAL(clover_parse_chord("TER"), chord[1]);
+    TEST_ASSERT_EQUAL(clover_parse_chord("KWREU"), chord[2]);
+    TEST_ASSERT_EQUAL(clover_parse_chord("TPHAEUR"), chord[3]);
+    TEST_ASSERT_EQUAL(clover_parse_chord("KWREU"), chord[4]);
+    TEST_ASSERT_EQUAL(clover_parse_chord("KWRAPB"), chord[5]);
+    TEST_ASSERT_EQUAL(clover_parse_chord("-Z"), chord[6]);
 }
 
 int main(void) {
