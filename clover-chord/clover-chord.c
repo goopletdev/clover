@@ -88,7 +88,7 @@ char* clover_paper_tape(unsigned int chord) {
 int clover_chord_compare(unsigned int chord1, unsigned int chord2) {
     int comparison;
     for (unsigned int bitmask = 1; bitmask < STENO_MASK; bitmask <<= 1) {
-        if (comparison = (bitmask & chord1) - (bitmask & chord2)) {
+        if ((comparison = ((bitmask & chord1) - (bitmask & chord2)))) {
             bitmask = STENO_MASK & ~((bitmask << 1) - 1);
             if (comparison > 0) {
                 return bitmask & chord2 ? -1 : 1;
@@ -126,22 +126,30 @@ unsigned int clover_parse_chord(char* chord) {
     unsigned int parsed_chord = 0;
     int search_start = 0;
     char key;
-    for (int i=0; key = chord[i]; i++) {
+    for (int i=0; (key = chord[i]); i++) {
         if (key == '-') {
             search_start = RIGHT_START;
         } else {
             search_start = clover__steno_index_of(key, search_start);
+            if (search_start == -1) {
+                search_start = 0;
+                continue;
+            }
             parsed_chord |= 1U << search_start++;
         }
     }
-
     return parsed_chord;
 }
 
 unsigned int* clover_parse_compound_chord(char* chord, int* size) {
+    *size = 0;
     unsigned int* parsed_chord = (unsigned int*)calloc(1, sizeof(int));
     int start = 0;
-    char* buffer = (char*)calloc(strlen(chord), sizeof(char));
+    char* buffer = (char*)calloc(strlen(chord) + 1, sizeof(char));
+    if (buffer == NULL) {
+        printf("Buffer allocation failed\n");
+        exit(1);
+    }
     for (int i = 0; chord[i]; i++) {
         if (chord[i] == '/') {
             parsed_chord = (unsigned int*)realloc(
@@ -156,6 +164,11 @@ unsigned int* clover_parse_compound_chord(char* chord, int* size) {
         } else {
             buffer[i] = chord[i];
         }
+    }
+    parsed_chord = (unsigned int*)realloc(parsed_chord, (*size + 1) * sizeof(int));
+    if (parsed_chord == NULL) {
+        printf("Memory allocation failed");
+        exit(1);
     }
     parsed_chord[(*size)++] = clover_parse_chord(&buffer[start]);
     free(buffer);
