@@ -4,15 +4,18 @@
 #include <string.h>
 
 clover_dict* clover_parse_dictionary(const char* file_path) {
+    printf("Opening JSON from %s...\n", file_path);
     FILE* fp = fopen(file_path, "r");
-    char line_buffer[CHAR_BUFFER_SIZE];
-
     if (fp == NULL) {
         printf("Error opening dictionary %s\n", file_path);
         exit(1);
     }
 
     clover_dict* d = clover_init_dict(0, NULL, NULL);
+    if (d == NULL) {
+        printf("Failed dictionary initialization\n");
+        exit(1);
+    }
     char key_buffer[CHAR_BUFFER_SIZE] = {0};
     int key_position = 0;
     char val_buffer[CHAR_BUFFER_SIZE] = {0};
@@ -56,7 +59,7 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
                 int size = 0;
                 unsigned int* id;
                 id = clover_parse_compound_chord(key_buffer, &size);
-                clover_push_entry(d, id, size, val_buffer);
+                d = clover_push_entry(d, id, size, val_buffer);
                 memset(key_buffer, 0, CHAR_BUFFER_SIZE * sizeof(char));
                 memset(val_buffer, 0, CHAR_BUFFER_SIZE * sizeof(char));
             }
@@ -66,10 +69,14 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
             key_buffer[key_position++] = (char)c;
         } else if (keyval_pos == 3) {
             val_buffer[val_position++] = (char)c;
+        } else {
         }
     }
 
+    printf("finished parsing; closing file...\n");
+
     fclose(fp);
+    printf("file closed.\n");
 
     return d;
 }

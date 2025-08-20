@@ -187,7 +187,7 @@ clover_dict* clover_push_entry(clover_dict* d,
     clover_dict* target_dict = clover__get_from_map(d->children, id[0]);
     if (!target_dict) {
         target_dict = clover_init_dict(id[0], NULL, d);
-        clover__add(d->children, target_dict);
+        d->children = clover__add(d->children, target_dict);
     }
 
     if (id_size == 1) {
