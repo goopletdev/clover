@@ -3,7 +3,7 @@ test/Unity
 assets/*
 
 # compiled executables:
-parse-chord
+clover
 test/clover-chord-test
 test/clover-hash-test
 test/clover-json-test
