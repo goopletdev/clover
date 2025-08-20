@@ -1,5 +1,9 @@
+#include "./clover-event-emulator.h"
+
 #include <linux/input.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <libevdev/libevdev-uinput.h>
 
 struct key_combination {
     int keycode;
@@ -12,10 +16,22 @@ const unsigned int MOD_LEFT_ALT = 1U << 2;
 const unsigned int MOD_RIGHT_ALT = 1U << 3;
 const unsigned int MOD_LEFT_CTRL = 1U << 4;
 const unsigned int MOD_RIGHT_CTRL = 1U << 5;
-const unsigned int MOD_SUPER = 1U << 6;
+const unsigned int MOD_LEFT_META = 1U << 6;
+const unsigned int MOD_RIGHT_META = 1U << 7;
+
+const unsigned int MOD_KEYS[8] = {
+    [0] = KEY_LEFTSHIFT,
+    [1] = KEY_RIGHTSHIFT,
+    [2] = KEY_LEFTALT,
+    [3] = KEY_RIGHTALT,
+    [4] = KEY_LEFTCTRL,
+    [5] = KEY_RIGHTCTRL,
+    [6] = KEY_LEFTMETA,
+    [7] = KEY_RIGHTMETA,
+};
 
 static const struct key_combination char_map[128] = {
-    [0 ... 127] = NULL,
+    [0 ... 127] = { '\0', 0 },
 
     #define KEYCOMBO(x,y,z) [x] = { y, z }
 
@@ -117,6 +133,51 @@ static const struct key_combination char_map[128] = {
     KEYCOMBO('|', KEY_BACKSLASH, MOD_LEFT_SHIFT),
     KEYCOMBO('}', KEY_RIGHTBRACE, MOD_LEFT_SHIFT),
     KEYCOMBO('~', KEY_GRAVE, MOD_LEFT_SHIFT),
-
-
 };
+
+int* get_modifier_keys(struct key_combination combo, int* size) {
+    unsigned int bitmask = combo.modifiers;
+    *size = 0;
+    int* modifiers = NULL;
+    while (bitmask) {
+        modifiers = (int*)realloc(modifiers, sizeof(int) * (1 + *size));
+        modifiers[(*size)++] = MOD_KEYS[__builtin_ctz(bitmask)];
+        bitmask &= bitmask - 1;
+    }
+    return modifiers;
+}
+
+void send_key_event(struct libevdev_uinput* uinput_dev, int keycode, int value) {
+    libevdev_uinput_write_event(uinput_dev, EV_KEY, keycode, value);
+    libevdev_uinput_write_event(uinput_dev, EV_SYN, SYN_REPORT, 0);
+}
+
+void send_ascii_char(struct libevdev_uinput* uinput_dev, char c) {
+    if (c < 0) {
+        printf("Char %c unsupported\n", c);
+        return;
+    }
+    struct key_combination kc = char_map[(int)c];
+    if (kc.keycode == '\0') {
+        printf("Char %c unsupported\n", c);
+        return;
+    }
+    int modifier_size = 0;
+    int* modifiers = get_modifier_keys(kc, &modifier_size);
+    for (int i = 0; i < modifier_size; i++) {
+        send_key_event(uinput_dev, modifiers[i], 1);
+    }
+    send_key_event(uinput_dev, kc.keycode, 1);
+    send_key_event(uinput_dev, kc.keycode, 0);
+    for (int i = 0; i < modifier_size; i++) {
+        send_key_event(uinput_dev, modifiers[i], 0);
+    }
+    free(modifiers);
+}
+
+void send_string(struct libevdev_uinput* uinput_dev, const char* str) {
+    while(*str) {
+        send_ascii_char(uinput_dev, *str);
+        str++;
+    }
+}
