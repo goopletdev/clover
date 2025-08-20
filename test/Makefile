@@ -1,5 +1,5 @@
 clover-chord-test: clover-chord-test.c Unity/src/unity.c ../clover-chord/clover-chord.c
-	gcc -o clover-chord-test clover-chord-test.c Unity/src/unity.c ../clover-chord/clover-chord.c -I.
+	gcc -g -o clover-chord-test clover-chord-test.c Unity/src/unity.c ../clover-chord/clover-chord.c -I.
 
 clover-hash-test: clover-hash-test.c Unity/src/unity.c ../clover-hash/clover-hash.c ../clover-chord/clover-chord.c
 	gcc -o clover-hash-test clover-hash-test.c Unity/src/unity.c ../clover-hash/clover-hash.c ../clover-chord/clover-chord.c -I.

@@ -13,6 +13,26 @@ const unsigned int CANCEL_MASK = 1U << STENO_ORDER_SIZE;
 const unsigned int SEND_MASK = CANCEL_MASK << 1;
 const unsigned int STENO_MASK = (1U << STENO_ORDER_SIZE) - 1;
 
+int clover_chord_is_ready(unsigned int chord) {
+    return chord & SEND_MASK;
+}
+
+unsigned int clover_chord_set_ready(unsigned int chord) {
+    return chord | SEND_MASK;
+}
+
+int clover_chord_is_canceled(unsigned int chord) {
+    return chord & CANCEL_MASK;
+}
+
+unsigned int clover_chord_set_canceled(unsigned int chord) {
+    return chord | CANCEL_MASK;
+}
+
+unsigned int clover_chord_value(unsigned int chord) {
+    return chord & STENO_MASK;
+}
+
 int clover__steno_index_of(char value, int start) {
     for (int i = start; i < STENO_ORDER_SIZE; i++) {
         if (STENO_ORDER[i] == value) {

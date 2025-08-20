@@ -6,6 +6,31 @@
 #define RIGHT_START 13
 
 /**
+ * Checks "send" flag to see whether chord is ready to be sent
+ */
+int clover_chord_is_ready(unsigned int chord);
+
+/**
+ * Returns new unsigned int with "send" flag set to true
+ */
+unsigned int clover_chord_set_ready(unsigned int chord);
+
+/**
+ * Checks whether the "cancel" flag is set
+ */
+int clover_chord_is_canceled(unsigned int chord);
+
+/**
+ * Returns a new unsigned int chord with the "cancel" flag set
+ */
+unsigned int clover_chord_set_canceled(unsigned int chord);
+
+/**
+ * returns chord bitmask without flags
+ */
+unsigned int clover_chord_value(unsigned int chord);
+
+/**
  * Returns the number of steno keys in a chord.
  * Ignores flag bits.
  */

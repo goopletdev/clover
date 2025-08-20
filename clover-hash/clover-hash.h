@@ -21,7 +21,7 @@ typedef struct clover__dictT clover_dict;
  * Getter;
  * Returns the id of a given entry
  */
-const unsigned int clover_dict_id(clover_dict* d);
+unsigned int clover_dict_id(clover_dict* d);
 
 /**
  * Getter;
@@ -33,7 +33,7 @@ const char* clover_dict_translation(clover_dict* d);
  * Getter;
  * returns number of child entries
  */
-const int clover_dict_size(clover_dict* d);
+int clover_dict_size(clover_dict* d);
 
 /**
  * Getter;
