@@ -46,6 +46,11 @@ const clover_dict* clover_dict_parent(clover_dict* d);
 // ##################
 
 /**
+ * Iterate through clover_dict children
+ */
+void clover_dict_children_foreach(clover_dict* d, int (*func)(clover_dict*));
+
+/**
  * Makes a new clover_dict from a given steno key and translation,
  * and returns a pointer to it. 
  * Root dictionary should have NULL parent

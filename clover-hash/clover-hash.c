@@ -44,6 +44,14 @@ const clover_dict* clover_dict_parent(clover_dict* d) {
 // #  /getters end  #
 // ##################
 
+void clover_dict_children_foreach(clover_dict* d, int (*func)(clover_dict*)) {
+    for (int i = 0; i < d->children->capacity; i++) {
+        if (d->children->dicts[i]) {
+            func(d->children->dicts[i]);
+        }
+    }
+}
+
 clover__dictmap* clover__init_dictmap(int capacity) {
     if (!capacity || capacity % 2) {
         printf("disallowed capacity value");
