@@ -21,3 +21,7 @@ Consider incorporating https://zserge.com/jsmn/ for json parsing
 
 For steno history, many translations will also result in backspaces. Undoing will therefore also have to keep track of the chars deleted by said backspaces
 
+### todo:
+assign unique id to each root steno dictionary: 0 for highest-priority, incrementing from there
+replace "translations" field with object containing function pointers, raw text, source steno dictionary id
+add "collisions" to handle same entry in multiple dictionaries
