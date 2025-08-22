@@ -64,27 +64,57 @@ int clover_chord_compare(clover_chord chord1, clover_chord chord2) {
  * TODO: fix
  * i swear there's a way to make this work without a loop
  */
-int clover__chord_compare(unsigned int chord1, unsigned int chord2) {
+int clover__chord_compare(clover_chord chord1, clover_chord chord2) {
     unsigned int bitmask = (chord1 &= STENO_MASK) ^ (chord2 &= STENO_MASK);
     if (!bitmask) {
         return 0;
     }
-    bitmask &= -bitmask;
+    bitmask &= ~(bitmask - 1);
 
-    if ((int)(bitmask & chord1)) { // chord1 has the earlier different value
+    if ((int)(bitmask & chord1)) { 
+        // chord1 has the earlier different value
         if (~((bitmask << 1) - 1) & chord2) {
-            return -1;
+            // chord2 doesn't have subsequent keys. 
+            // chord2 precedes chord1 in steno order.
+            return 1;
         }
-        return 1;
+        // chord2 has subsequent keys.
+        // chord 2 follows chord1 in steno order.
+        return -1;
     } 
+    // chord2 has the earlier different value
     if (~((bitmask << 1) - 1) & chord1) {
-        return 1;
+        // chord1 doesn't have subsequent keys.
+        // chord1 precedes chord2 in steno order.
+        return -1;
+    }
+    // chord1 has subsequent keyskeys.
+    // chord1 precedes 
+    return 1;
+}
+
+int clover___chord_compare(clover_chord chord1, clover_chord chord2) {
+    unsigned int bitmask = (chord &= STENO_MASK) ^ (chord2 &= STENO_MASK);
+    if (!(bitmask &= ~(bitmask - 1))) {
+        return 0;
+    }
+    if (bitmask & chord1) {
+        return ~(bitmask - 1) & chord2 ? 1 : -1;
+    }
+    return ~(bitmask - 1) & chord1 ? -1 : 1;
+}
+
+int clover__steno_index_of(char value, int start) {
+    for (int i = start; i < STENO_ORDER_LEN; i++) {
+        if (STENO_ORDER[i] == value) {
+            return i;
+        }
     }
     return -1;
 }
 
-unsigned int clover_parse_chord(char* chord) {
-    unsigned int parsed_chord = 0;
+clover_chord clover_parse_chord(char* chord) {
+    clover_chord parsed_chord = 0;
     int search_start = 0;
     char key;
     for (int i=0; (key = chord[i]); i++) {
