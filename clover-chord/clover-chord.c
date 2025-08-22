@@ -37,18 +37,18 @@ char* clover_pretty_chord(clover_chord chord) {
     return pretty;
 }
 
-char* clover_paper_tape(unsigned int chord) {
-    char* tape = (char*)malloc((STENO_ORDER_SIZE + 1) * sizeof(char));
-    for (int i = 0; i < STENO_ORDER_SIZE; i++) {
+char* clover_paper_tape(clover_chord chord) {
+    char* tape = (char*)malloc((STENO_ORDER_LEN + 1) * sizeof(char));
+    for (int i = 0; i < STENO_ORDER_LEN; i++) {
         tape[i] = chord & (1U << i) ? STENO_ORDER[i] : ' ';
     }
-    tape[STENO_ORDER_SIZE] = '\0';
+    tape[STENO_ORDER_LEN] = '\0';
     return tape;
 }
 
-int clover_chord_compare(unsigned int chord1, unsigned int chord2) {
+int clover_chord_compare(clover_chord chord1, clover_chord chord2) {
     int comparison;
-    for (unsigned int bitmask = 1; bitmask < STENO_MASK; bitmask <<= 1) {
+    for (clover_chord bitmask = 1; bitmask < STENO_MASK; bitmask <<= 1) {
         if ((comparison = ((bitmask & chord1) - (bitmask & chord2)))) {
             bitmask = STENO_MASK & ~((bitmask << 1) - 1);
             if (comparison > 0) {
@@ -102,9 +102,9 @@ unsigned int clover_parse_chord(char* chord) {
     return parsed_chord;
 }
 
-unsigned int* clover_parse_compound_chord(char* chord, int* size) {
+clover_chord* clover_parse_compound_chord(char* chord, int* size) {
     *size = 0;
-    unsigned int* parsed_chord = (unsigned int*)calloc(1, sizeof(int));
+    clover_chord* parsed_chord = (clover_chord*)calloc(1, sizeof(int));
     int start = 0;
     char* buffer = (char*)calloc(strlen(chord) + 1, sizeof(char));
     if (buffer == NULL) {
@@ -113,11 +113,11 @@ unsigned int* clover_parse_compound_chord(char* chord, int* size) {
     }
     for (int i = 0; chord[i]; i++) {
         if (chord[i] == '/') {
-            parsed_chord = (unsigned int*)realloc(
+            parsed_chord = (clover_chord*)realloc(
                 parsed_chord, (*size + 1) * sizeof(int)
             );
             if (parsed_chord == NULL) {
-                printf("Memory allocation failed");
+                printf("Memory allocation failed\n");
                 exit(1);
             }
             parsed_chord[(*size)++] = clover_parse_chord(&buffer[start]);
@@ -126,9 +126,9 @@ unsigned int* clover_parse_compound_chord(char* chord, int* size) {
             buffer[i] = chord[i];
         }
     }
-    parsed_chord = (unsigned int*)realloc(parsed_chord, (*size + 1) * sizeof(int));
+    parsed_chord = (clover_chord*)realloc(parsed_chord, (*size + 1) * sizeof(int));
     if (parsed_chord == NULL) {
-        printf("Memory allocation failed");
+        printf("Memory allocation failed\n");
         exit(1);
     }
     parsed_chord[(*size)++] = clover_parse_chord(&buffer[start]);

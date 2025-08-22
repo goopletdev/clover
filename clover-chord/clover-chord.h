@@ -66,14 +66,14 @@ static inline int clover_chord_size(clover_chord chord) {
  * positive value: chord1 comes after chord2 in steno order.
  * negative value: chord1 precedes chord2 in steno order.
  */
-int clover_chord_compare(unsigned int chord1, unsigned int chord2);
+int clover_chord_compare(clover_chord chord1, clover_chord chord2);
 
 /**
  * @brief Stringifies a chord into a steno stroke
  * @return Dynamically allocated string
  * @note uses malloc; caller must free() return value
  */
-char* clover_pretty_chord(unsigned int chord);
+char* clover_pretty_chord(clover_chord chord);
 
 /**
  * @brief Converts a chord into classic whitespace-padded steno machine output
@@ -81,18 +81,18 @@ char* clover_pretty_chord(unsigned int chord);
  * @note uses malloc; caller must free() return value
  * @see clover_pretty_chord()
  */
-char* clover_paper_tape(unsigned int chord);
+char* clover_paper_tape(clover_chord chord);
 
 /**
- * Parses the key of a dictionary entry into an unsigned int.
+ * Parses the key of a dictionary entry into an clover_chord.
  */
-unsigned int clover_parse_chord(char* chord);
+clover_chord clover_parse_chord(char* chord);
 
 /**
  * Parses a compound chord (i.e. one with multiple strokes)
  * int* size MUST be a pointer to an int set to 0
  * Uses malloc; be sure to free return value
  */
-unsigned int* clover_parse_compound_chord(char* chord, int* size);
+clover_chord* clover_parse_compound_chord(char* chord, int* size);
 
 #endif // CLOVER_CHORD_H

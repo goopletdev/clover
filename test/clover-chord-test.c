@@ -45,7 +45,7 @@ void clvrParseChord_shouldParseToUInt(void) {
 
 void clvrParseCompoundChord_shouldHandleArbitraryChordSizes(void) {
     int size = 0;
-    unsigned int* chord; 
+    clover_chord* chord; 
     char* key = "STKPWAO/STKPWAO/HRO/SKWREUBG/KWRAL";
     chord = clover_parse_compound_chord(key, &size);
     TEST_ASSERT_EQUAL(5, size);

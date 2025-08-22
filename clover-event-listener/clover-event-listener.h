@@ -12,8 +12,8 @@
  * @param chord Bitmask for steno chord
  * @param keys_down Pointer to int storing number of keys currently held
  */
-unsigned int clover_handle_key_event(
-    int fd, unsigned int chord, int* keys_down
+clover_chord clover_handle_key_event(
+    int fd, clover_chord chord, int* keys_down
 );
 
 #endif // CLOVER_EVENT_LISTENER_H

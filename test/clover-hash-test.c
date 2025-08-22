@@ -19,7 +19,7 @@ void clvrInitDict_shouldReturnStructInstancePointer(void) {
 
 void clvrHas_shouldBeTrueIfHas_shouldBeFalseIfNot(void) {
     clover_dict* dict = clover_init_dict(0, NULL, NULL);
-    unsigned int ids[0];
+    clover_chord ids[0];
     ids[0] = 1U;
     clover_push_entry(dict, ids, 1, "=repeat_last_translation");
 
@@ -30,7 +30,7 @@ void clvrHas_shouldBeTrueIfHas_shouldBeFalseIfNot(void) {
 
 void clvrGet_shouldReturnContainedStruct_orNull(void) {
     clover_dict* dict = clover_init_dict(0, NULL, NULL);
-    unsigned int ids[0];
+    clover_chord ids[0];
     ids[0] = 1U;
     clover_push_entry(dict, ids, 1, "=repeat_last_translation");
 
@@ -43,7 +43,7 @@ void clvrGet_shouldReturnContainedStruct_orNull(void) {
 
 void clvrPushEntry_shouldRecursivelyAddEntries(void) {
     clover_dict* dict = clover_init_dict(0, NULL, NULL);
-    unsigned int ids[3] = {
+    clover_chord ids[3] = {
         [0] = clover_parse_chord("KWHEFRT"),
         [1] = clover_parse_chord("TKA*EU"),
         [2] = clover_parse_chord("-Z")

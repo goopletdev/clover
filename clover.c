@@ -20,7 +20,7 @@ void handle_cli_args(int argc, char **argv) {
     }
 }
 
-void clover__send_chord(struct libevdev_uinput* uinput_dev, unsigned int chord, clover_dict* dict) {
+void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, clover_dict* dict) {
     printf("\r%s | ", clover_paper_tape(chord));
     clover_dict* entry = clover_get(dict, chord);
     const char* translation = entry ? clover_dict_translation(entry) : NULL;
@@ -33,7 +33,7 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, unsigned int chord, 
 }
 
 void clover__event_loop(int fd, struct libevdev_uinput* uinput_dev, clover_dict* dict) {   
-    unsigned int chord = 0;
+    clover_chord chord = 0;
     int keys_down = 0;
 
     for (;;) {

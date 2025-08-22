@@ -4,7 +4,7 @@
 #include <string.h>
 
 struct clover__dictT {
-    unsigned int id;
+    clover_chord id;
     char* translation;
     struct clover__dictT* parent;
     struct clover__dictmapT* children;
@@ -28,7 +28,7 @@ int clover_dict_size(clover_dict* d) {
     return d->children->size;
 }
 
-unsigned int clover_dict_id(clover_dict* d) {
+clover_chord clover_dict_id(clover_dict* d) {
     return d->id;
 }
 
@@ -66,7 +66,7 @@ clover__dictmap* clover__init_dictmap(int capacity) {
 }
 
 clover_dict* clover_init_dict(
-    unsigned int id, char* translation, clover_dict* parent
+    clover_chord id, char* translation, clover_dict* parent
 ) {
     clover_dict* d = (clover_dict*)malloc(sizeof(clover_dict));
     d->id = id;
@@ -76,7 +76,7 @@ clover_dict* clover_init_dict(
     return d;
 }
 
-int clover__hash_function(clover__dictmap* m, unsigned int id) {
+int clover__hash_function(clover__dictmap* m, clover_chord id) {
     unsigned int hash = 0;
     for (int trailing = __builtin_ctz(m->capacity); id; id >>= trailing) {
         hash ^= id;
@@ -99,7 +99,7 @@ int clover__linear_probe_null(clover__dictmap* m, int start) {
     return -1;
 }
 
-int clover__hash_index_of(clover__dictmap* m, unsigned int id) {
+int clover__hash_index_of(clover__dictmap* m, clover_chord id) {
     int index = clover__hash_function(m, id);
     for (int i = index; i < m->capacity; i++) {
         if (m->dicts[i]) {
@@ -122,7 +122,7 @@ int clover__hash_index_of(clover__dictmap* m, unsigned int id) {
     return -1;
 }
 
-int clover_has(clover_dict* d, unsigned int id) {
+int clover_has(clover_dict* d, clover_chord id) {
     clover__dictmap* m = d->children;
     if (clover__hash_index_of(m, id) + 1) {
         return 1;
@@ -130,7 +130,7 @@ int clover_has(clover_dict* d, unsigned int id) {
     return 0;
 }
 
-clover_dict* clover__get_from_map(clover__dictmap* m, unsigned int id) {
+clover_dict* clover__get_from_map(clover__dictmap* m, clover_chord id) {
     int index = clover__hash_index_of(m, id);
     if (index > -1) {
         return m->dicts[index];
@@ -138,7 +138,7 @@ clover_dict* clover__get_from_map(clover__dictmap* m, unsigned int id) {
     return NULL;
 }
 
-clover_dict* clover_get(clover_dict* d, unsigned int id) {
+clover_dict* clover_get(clover_dict* d, clover_chord id) {
     return clover__get_from_map(d->children, id);
 }
 
@@ -189,7 +189,7 @@ clover__dictmap* clover__scale_up_dictmap(clover__dictmap* old) {
 }
 
 clover_dict* clover_push_entry(clover_dict* d,
-    unsigned int* id,
+    clover_chord* id,
     int id_size,
     const char *translation
 ) {

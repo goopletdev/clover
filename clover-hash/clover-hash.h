@@ -21,7 +21,7 @@ typedef struct clover__dictT clover_dict;
  * Getter;
  * Returns the id of a given entry
  */
-unsigned int clover_dict_id(clover_dict* d);
+clover_chord clover_dict_id(clover_dict* d);
 
 /**
  * Getter;
@@ -56,7 +56,7 @@ void clover_dict_children_foreach(clover_dict* d, int (*func)(clover_dict*));
  * Root dictionary should have NULL parent
  */
 clover_dict* clover_init_dict(
-    unsigned int id, 
+    clover_chord id, 
     char* translation, 
     clover_dict* parent // set to null for root dict
 );
@@ -65,20 +65,20 @@ clover_dict* clover_init_dict(
  * Returns 1 if given clover_dict has an element with the given id,
  * returns 0 if it does not
  */
-int clover_has(clover_dict* d, unsigned int id);
+int clover_has(clover_dict* d, clover_chord id);
 
 /**
  * Gets an entry by its steno chord id in a given clover_dict,
  * or returns NULL
  */
-clover_dict* clover_get(clover_dict* d, unsigned int id);
+clover_dict* clover_get(clover_dict* d, clover_chord id);
 
 /**
  * Recursively adds a multi-stroke steno translation
  */
 clover_dict* clover_push_entry(
     clover_dict* d,
-    unsigned int* id,
+    clover_chord* id,
     int id_size,
     const char* translation
 );

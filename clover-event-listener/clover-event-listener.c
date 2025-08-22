@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-const unsigned int clover__QWERTY_KEY_VALS[KEY_MAX + 1] = {
+const clover_chord clover__QWERTY_KEY_VALS[KEY_MAX + 1] = {
     [0 ... KEY_MAX] = 0,
 
     // left hand keys:
@@ -26,8 +26,8 @@ const unsigned int clover__QWERTY_KEY_VALS[KEY_MAX + 1] = {
     [KEY_LEFTBRACE] = 1 << 21, [KEY_APOSTROPHE] = 1 << 22
 };
 
-unsigned int clover__keydown(
-    int key_code, unsigned int chord, int* keys_down
+clover_chord clover__keydown(
+    int key_code, clover_chord chord, int* keys_down
 ) {
     (*keys_down)++;
 
@@ -42,7 +42,7 @@ unsigned int clover__keydown(
     return clover_chord_set_canceled(chord);
 }
 
-unsigned int clover__keyup(unsigned int chord, int* keys_down) {
+clover_chord clover__keyup(clover_chord chord, int* keys_down) {
     if (--(*keys_down) == 0) {
         return clover_chord_is_canceled(chord) ? 0U : clover_chord_set_ready(chord);
     } else if (*keys_down < 0) {
@@ -53,7 +53,7 @@ unsigned int clover__keyup(unsigned int chord, int* keys_down) {
     return chord;
 }
 
-unsigned int clover_handle_key_event(int fd, unsigned int chord, int* keys_down) {
+clover_chord clover_handle_key_event(int fd, clover_chord chord, int* keys_down) {
     struct input_event event;
     read(fd, &event, sizeof(event));
     if (event.type != 1) {
