@@ -2,39 +2,63 @@
 #define CLOVER_CHORD_H
 
 #define STENO_ORDER "#STKPWHRAO*EUFRPBLGTSDZ"
+#define STENO_ORDER_LEN (sizeof(STENO_ORDER) - 1)
 #define MIDDLE_START 8
 #define RIGHT_START 13
+
+#define NUMBER_MIDDLE_KEYS (RIGHT_START - MIDDLE_START)
+#define NUMBER_RIGHT_KEYS (STENO_ORDER_LEN - RIGHT_START)
+
+// flag masks:
+#define CANCEL_MASK (1U << STENO_ORDER_LEN)
+#define SEND_MASK (CANCEL_MASK << 1)
+// chord value mask:
+#define STENO_MASK ((1U << STENO_ORDER_LEN) - 1)
+
+typedef unsigned int clover_chord;
 
 /**
  * Checks "send" flag to see whether chord is ready to be sent
  */
-int clover_chord_is_ready(unsigned int chord);
+static inline int clover_chord_is_ready(clover_chord chord) {
+    return chord & SEND_MASK;
+}
 
 /**
- * Returns new unsigned int with "send" flag set to true
+ * Returns new clover_chord with "send" flag set to true
  */
-unsigned int clover_chord_set_ready(unsigned int chord);
+static inline clover_chord clover_chord_set_ready(clover_chord chord) {
+    return chord | SEND_MASK;
+}
 
 /**
  * Checks whether the "cancel" flag is set
  */
-int clover_chord_is_canceled(unsigned int chord);
+static inline int clover_chord_is_canceled(clover_chord chord) {
+    return chord & CANCEL_MASK;
+}
 
 /**
- * Returns a new unsigned int chord with the "cancel" flag set
+ * Returns a new clover_chord chord with the "cancel" flag set
  */
-unsigned int clover_chord_set_canceled(unsigned int chord);
+static inline clover_chord clover_chord_set_canceled(clover_chord chord) {
+    return chord | CANCEL_MASK;
+}
 
 /**
  * returns chord bitmask without flags
  */
-unsigned int clover_chord_value(unsigned int chord);
+static inline clover_chord clover_chord_value(clover_chord chord) {
+    return chord & STENO_MASK;
+}
 
 /**
  * Returns the number of steno keys in a chord.
  * Ignores flag bits.
  */
-int clover_chord_size(unsigned int chord);
+static inline int clover_chord_size(clover_chord chord) {
+    return __builtin_popcount(chord & STENO_MASK);
+}
 
 /**
  * Returns:

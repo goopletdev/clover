@@ -3,50 +3,11 @@
 #include <string.h>
 #include "./clover-chord.h"
 
-const int STENO_ORDER_SIZE = strlen(STENO_ORDER);
-const int NUMBER_MIDDLE_KEYS = RIGHT_START - MIDDLE_START;
-const int NUMBER_RIGHT_KEYS = STENO_ORDER_SIZE - RIGHT_START;
-const unsigned int L_KEY_MASK = (1U << MIDDLE_START) - 1;
-const unsigned int M_KEY_MASK = ((1U << NUMBER_MIDDLE_KEYS) - 1) << MIDDLE_START;
-const unsigned int R_KEY_MASK = ((1U << NUMBER_RIGHT_KEYS) - 1) << RIGHT_START;
-const unsigned int CANCEL_MASK = 1U << STENO_ORDER_SIZE;
-const unsigned int SEND_MASK = CANCEL_MASK << 1;
-const unsigned int STENO_MASK = (1U << STENO_ORDER_SIZE) - 1;
+#define L_KEY_MASK ((1U << MIDDLE_START) - 1)
+#define M_KEY_MASK (((1U << NUMBER_MIDDLE_KEYS) - 1) << MIDDLE_START)
+#define R_KEY_MASK (((1U << NUMBER_RIGHT_KEYS) - 1) << RIGHT_START)
 
-int clover_chord_is_ready(unsigned int chord) {
-    return chord & SEND_MASK;
-}
-
-unsigned int clover_chord_set_ready(unsigned int chord) {
-    return chord | SEND_MASK;
-}
-
-int clover_chord_is_canceled(unsigned int chord) {
-    return chord & CANCEL_MASK;
-}
-
-unsigned int clover_chord_set_canceled(unsigned int chord) {
-    return chord | CANCEL_MASK;
-}
-
-unsigned int clover_chord_value(unsigned int chord) {
-    return chord & STENO_MASK;
-}
-
-int clover__steno_index_of(char value, int start) {
-    for (int i = start; i < STENO_ORDER_SIZE; i++) {
-        if (STENO_ORDER[i] == value) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int clover_chord_size(unsigned int chord) {
-    return __builtin_popcount(chord & STENO_MASK);
-}
-
-char* clover_pretty_chord(unsigned int chord) {
+char* clover_pretty_chord(clover_chord chord) {
     chord &= STENO_MASK;
     int separator = (chord & R_KEY_MASK) && !(chord & M_KEY_MASK) ? 1 : 0;
     char* pretty = (char*)malloc
