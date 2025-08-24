@@ -1,10 +1,10 @@
 #ifndef CLOVER_HASH_H
 #define CLOVER_HASH_H
 
-#include "../clover-chord/clover-chord.h"
-// the above include statement is currently there for
-// convenient access to clover_parse_chord in the testing suite,
-// as well as for convenient error messages
+#include <stdio.h> // printf
+#include <stdlib.h> // malloc, calloc
+#include <string.h> // uses strlen
+#include "chord.h" // clover_chord type, clover_pretty_chord for error msgs
 
 /**
  * Dictionary object that holds a translation of a steno stroke,

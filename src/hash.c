@@ -1,7 +1,4 @@
-#include "./clover-hash.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "hash.h"
 
 struct clover__dictT {
     clover_chord id;

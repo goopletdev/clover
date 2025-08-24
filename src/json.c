@@ -1,7 +1,4 @@
-#include "./clover-json.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "json.h"
 
 clover_dict* clover_parse_dictionary(const char* file_path) {
     printf("Opening JSON from %s...\n", file_path);

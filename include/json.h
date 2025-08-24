@@ -1,8 +1,14 @@
 #ifndef CLOVER_JSON_H
 #define CLOVER_JSON_H
 
-#include "../clover-hash/clover-hash.h"
-#include "../clover-chord/clover-chord.h"
+#include <stdio.h> // printf, FILE type,
+                   // fopen, fclose
+#include <string.h> // memset
+
+#include "chord.h" // clover_chord type
+#include "hash.h" // clover_parse_compound_chord, 
+                  // clover_push_entry, 
+                  // clover_dict type
 
 #define CHAR_BUFFER_SIZE 256
 

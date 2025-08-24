@@ -1,5 +1,5 @@
-#include "../clover-hash/clover-hash.h"
-#include "./Unity/src/unity.h"
+#include "hash.h"
+#include "unity.h"
 #include <stdlib.h>
 
 void setUp(void) {

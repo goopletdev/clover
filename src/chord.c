@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "./clover-chord.h"
+#include "chord.h"
 
 #define L_KEY_MASK ((1U << MIDDLE_START) - 1)
 #define M_KEY_MASK (((1U << NUMBER_MIDDLE_KEYS) - 1) << MIDDLE_START)

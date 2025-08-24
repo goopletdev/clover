@@ -1,7 +1,4 @@
-#include "./clover-event-listener.h"
-
-#include <stdio.h>
-#include <unistd.h>
+#include "event-listener.h"
 
 const clover_chord clover__QWERTY_KEY_VALS[KEY_MAX + 1] = {
     [0 ... KEY_MAX] = 0,

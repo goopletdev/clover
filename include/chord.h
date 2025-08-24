@@ -1,6 +1,10 @@
 #ifndef CLOVER_CHORD_H
 #define CLOVER_CHORD_H
 
+#include <stdio.h> // printf
+#include <stdlib.h> // malloc, calloc, realloc, free
+#include <string.h> // clover_parse_compound_chord uses strlen
+
 #define STENO_ORDER "#STKPWHRAO*EUFRPBLGTSDZ"
 #define STENO_ORDER_LEN (sizeof(STENO_ORDER) - 1)
 #define MIDDLE_START 8

@@ -1,5 +1,5 @@
-#include "../clover-chord/clover-chord.h"
-#include "./Unity/src/unity.h"
+#include "chord.h"
+#include "unity.h"
 
 void setUp(void) {
 

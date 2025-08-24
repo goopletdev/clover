@@ -1,15 +1,12 @@
 # dependencies:
 test/Unity
-assets/*
+dictionaries/*
 
 # compiled executables:
-clover
-test/clover-chord-test
-test/clover-hash-test
-test/clover-json-test
+build/
 
 # other:
 .vscode
 
 # testing exceptions:
-!assets/test-dictionary.json
+!dictionaries/test-dictionary.json

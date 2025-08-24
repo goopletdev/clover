@@ -1,9 +1,4 @@
-#include "./clover-event-emulator.h"
-
-#include <linux/input.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <libevdev/libevdev-uinput.h>
+#include "event-emulator.h"
 
 struct key_combination {
     int keycode;

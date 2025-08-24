@@ -1,10 +1,16 @@
 #ifndef CLOVER_EVENT_LISTENER_H
 #define CLOVER_EVENT_LISTENER_H
 
-#include "../clover-chord/clover-chord.h"
 #include "../clover-hash/clover-hash.h"
-#include <linux/input.h>
-#include <stdlib.h>
+#include <linux/input.h> // key name macros, eg KEY_Q, KEY_A
+                         // struct input_event
+#include <stdio.h> // putchar
+#include <unistd.h> // read
+
+#include "chord.h" // clover_chord type
+                   // clover_chord_is_canceled
+                   // clover_chord_set_ready
+                   // clover_chord_set_canceled
 
 /**
  * @brief

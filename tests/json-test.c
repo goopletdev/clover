@@ -1,5 +1,5 @@
-#include "../clover-json/clover-json.h"
-#include "./Unity/src/unity.h"
+#include "json.h"
+#include "unity.h"
 
 void setUp(void) {
 
