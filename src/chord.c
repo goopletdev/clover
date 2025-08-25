@@ -91,7 +91,7 @@ int clover__chord_compare(clover_chord chord1, clover_chord chord2) {
 }
 
 int clover___chord_compare(clover_chord chord1, clover_chord chord2) {
-    unsigned int bitmask = (chord &= STENO_MASK) ^ (chord2 &= STENO_MASK);
+    unsigned int bitmask = (chord1 &= STENO_MASK) ^ (chord2 &= STENO_MASK);
     if (!(bitmask &= ~(bitmask - 1))) {
         return 0;
     }
