@@ -11,7 +11,7 @@
 #include <libevdev/libevdev-uinput.h>
 
 #define EVENT_PATH "/dev/input/event23"
-#define DICTIONARY_PATH "./assets/lapwing-base.json"
+#define DICTIONARY_PATH "./dictionaries/lapwing-base.json"
 
 void handle_cli_args(int argc, char **argv) {
     printf("Running ");
