@@ -1,7 +1,6 @@
 #ifndef CLOVER_EVENT_LISTENER_H
 #define CLOVER_EVENT_LISTENER_H
 
-#include "../clover-hash/clover-hash.h"
 #include <linux/input.h> // key name macros, eg KEY_Q, KEY_A
                          // struct input_event
 #include <stdio.h> // putchar

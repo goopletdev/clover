@@ -1,8 +1,8 @@
-#include "clover-chord/clover-chord.h"
-#include "clover-event-listener/clover-event-listener.h"
-#include "clover-event-emulator/clover-event-emulator.h"
-#include "clover-hash/clover-hash.h"
-#include "clover-json/clover-json.h"
+#include "chord.h"
+#include "event-listener.h"
+#include "event-emulator.h"
+#include "hash.h"
+#include "json.h"
 
 #include <fcntl.h>
 #include <stdio.h>
