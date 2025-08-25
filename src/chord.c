@@ -36,7 +36,7 @@ char* clover_pretty_chord(clover_chord chord) {
 
 char* clover_paper_tape(clover_chord chord) {
     char* tape = (char*)malloc((STENO_ORDER_LEN + 1) * sizeof(char));
-    for (int i = 0; i < STENO_ORDER_LEN; i++) {
+    for (size_t i = 0; i < STENO_ORDER_LEN; i++) {
         tape[i] = chord & (1U << i) ? STENO_ORDER[i] : ' ';
     }
     tape[STENO_ORDER_LEN] = '\0';
@@ -102,7 +102,7 @@ int clover___chord_compare(clover_chord chord1, clover_chord chord2) {
 }
 
 int clover__steno_index_of(char value, int start) {
-    for (int i = start; i < STENO_ORDER_LEN; i++) {
+    for (size_t i = start; i < STENO_ORDER_LEN; i++) {
         if (STENO_ORDER[i] == value) {
             return i;
         }

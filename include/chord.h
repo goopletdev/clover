@@ -2,7 +2,7 @@
 #define CLOVER_CHORD_H
 
 #include <stdio.h> // printf
-#include <stdlib.h> // malloc, calloc, realloc, free
+#include <stdlib.h> // malloc, calloc, realloc, free, type size_t
 #include <string.h> // clover_parse_compound_chord uses strlen
 
 #define STENO_ORDER "#STKPWHRAO*EUFRPBLGTSDZ"
