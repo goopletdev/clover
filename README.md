@@ -1,18 +1,37 @@
 # clover
 Lightweight C implementation of [Plover](https://github.com/openstenoproject/plover)'s simplest functionality 
 
-## dependencies
+## Building
+### 1. Install system dependencies
 Clover uses libevdev for sending keyboard events.
-### Ubuntu/Debian
+#### Ubuntu/Debian
 ```bash
 sudo apt install libevdev-dev
 ```
-### Arch Linux
+#### Arch Linux
 ```bash
 sudo pacman -S libevdev
 ```
+### 2. Clone with submodules
+```bash
+git clone --recursive https://github.com/goopletdev/clover.git
+cd clover
+```
+If you cloned without --recursive:
+```bash
+git submodule update --init --recursive
+```
+### 3. Build
+```bash
+make
+```
+### 4. Run tests
+```bash
+make test
+```
 
-in `assets` directory:
+## Dictionaries:
+In `dictionaries/`:
 ```
 https://raw.githubusercontent.com/aerickt/steno-dictionaries/refs/heads/main/lapwing-base.json
 ```
