@@ -39,13 +39,13 @@ UNITY_INC = $(UNITY_DIR)/src
 SOURCES = $(shell find $(SRCDIR) -name "*.c")
 # pattern substitution: $(var:pattern=replacement)
 # wildcard % matches any string
-OBJECTS = $(SOURCES:%.c=$(OBJDIR)/%.o)
-DEPS = $(SOURCES:%.c=$(DEPDIR)/%.d)
+OBJECTS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
+DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SOURCES))
 
 TEST_SOURCES = $(shell find $(TESTDIR) -name "*.c")
-TEST_OBJECTS = $(TEST_SOURCES:%.c=$(OBJDIR)/%.o)
-TEST_DEPS = $(TEST_SOURCES:%.c=$(DEPDIR)/%.d)
-TEST_BINARIES = $(TEST_SOURCES:%.c=$(TESTBINDIR)/%)
+TEST_OBJECTS = $(patsubst $(TESTDIR)/%.c,$(OBJDIR)/%.o,$(TEST_SOURCES))
+TEST_DEPS = $(patsubst $(TESTDIR)/%.c,$(DEPDIR)/%.d,$(TEST_SOURCES))
+TEST_BINARIES = $(patsubst $(TESTDIR)/%.c,$(TESTBINDIR)/%,$(TEST_SOURCES))
 
 # ##################
 # # compiler flags #
@@ -89,15 +89,15 @@ $(BINDIR)/$(TARGET): $(OBJECTS) | $(BINDIR)
 # $(dir ...) extracts directory portion of file path
 # $< auto variable for first prereq (.c file)
 # -c: compile only; don't link
-$(OBJDIR)/%.o: %.c | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	@mkdir -p $(dir $@)
 	@mkdir -p $(dir $(DEPDIR)/$*)
 	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
 
-$(TESTBINDIR)/%: $(TESTDIR)/%.c $(filter-out $(OBJDIR)/src/main.o, $(OBJECTS)) | $(TESTBINDIR)
+$(TESTBINDIR)/%: $(TESTDIR)/%.c $(filter-out $(OBJDIR)/main.o, $(OBJECTS)) | $(TESTBINDIR)
 	@mkdir -p $(dir $@)
 	@mkdir -p $(dir $(DEPDIR)/$*)
-	$(CC) $(CFLAGS) $(DEPFLAGS) -o $@ $< $(UNITY_SRC) $(filter-out $(OBJDIR)/src/main.o, $(OBJECTS)) $(LDFLAGS)
+	$(CC) $(CFLAGS) -I$(UNITY_INC) $(DEPFLAGS) -o $@ $< $(UNITY_SRC) $(filter-out $(OBJDIR)/main.o, $(OBJECTS)) $(LDFLAGS)
 
 test-build: $(TEST_BINARIES)
 
