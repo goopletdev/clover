@@ -118,6 +118,9 @@ $(OBJDIR) $(BINDIR) $(DEPDIR) $(TESTBINDIR):
 # include dependency files
 -include $(DEPS)
 
+run: $(BINDIR)/$(TARGET)
+	./$(BINDIR)/$(TARGET)
+
 # standard target name for cleanup opersations
 clean:
 	rm -rf $(BUILDDIR)
