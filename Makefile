@@ -25,6 +25,12 @@ OBJDIR = $(BUILDDIR)/obj
 BINDIR = $(BUILDDIR)/bin
 DEPDIR = $(BUILDDIR)/deps
 
+TESTDIR = tests
+TESTBINDIR = $(BUILDDIR)/test-bin
+UNITY_DIR = lib/Unity
+UNITY_SRC = $(UNITY_DIR)/src/unity.c
+UNITY_INC = $(UNITY_DIR)/src
+
 # #####################
 # # find source files #
 # #####################
@@ -35,6 +41,11 @@ SOURCES = $(shell find $(SRCDIR) -name "*.c")
 # wildcard % matches any string
 OBJECTS = $(SOURCES:%.c=$(OBJDIR)/%.o)
 DEPS = $(SOURCES:%.c=$(DEPDIR)/%.d)
+
+TEST_SOURCES = $(shell find $(TESTDIR) -name "*.c")
+TEST_OBJECTS = $(TEST_SOURCES:%.c=$(OBJDIR)/%.o)
+TEST_DEPS = $(TEST_SOURCES:%.c=$(DEPDIR)/%.d)
+TEST_BINARIES = $(TEST_SOURCES:%.c=$(TESTBINDIR)/%)
 
 # ##################
 # # compiler flags #
@@ -56,7 +67,7 @@ DEPFLAGS = -MMD -MP -MF $(DEPDIR)/$*.d
 # ######################
 # executes immediately when Makefile is parsed
 # -p prevents errors if dirs already exist
-$(shell mkdir -p $(OBJDIR) $(BINDIR) $(DEPDIR))
+$(shell mkdir -p $(OBJDIR) $(BINDIR) $(DEPDIR) $(TESTBINDIR))
 
 # ###############
 # # build rules #
@@ -83,9 +94,24 @@ $(OBJDIR)/%.o: %.c | $(OBJDIR)
 	@mkdir -p $(dir $(DEPDIR)/$*)
 	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
 
+$(TESTBINDIR)/%: $(TESTDIR)/%.c $(filter-out $(OBJDIR)/src/main.o, $(OBJECTS)) | $(TESTBINDIR)
+	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $(DEPDIR)/$*)
+	$(CC) $(CFLAGS) $(DEPFLAGS) -o $@ $< $(UNITY_SRC) $(filter-out $(OBJDIR)/src/main.o, $(OBJECTS)) $(LDFLAGS)
+
+test-build: $(TEST_BINARIES)
+
+test: test-build
+	@echo "Running tests..."
+	@for test in $(TEST_BINARIES); do \
+		echo "Running $$test..."; \
+		$$test || exit 1; \
+	done
+	@echo "All tests passed!"
+
 # create directories; satisfies order-only prerequisites
 # multiple targets charing the same rule
-$(OBJDIR) $(BINDIR) $(DEPDIR):
+$(OBJDIR) $(BINDIR) $(DEPDIR) $(TESTBINDIR):
 	mkdir -p $@
 
 # Make directive; executes immediately upon makefile parsing
@@ -97,4 +123,4 @@ clean:
 	rm -rf $(BUILDDIR)
 
 # clean is not a file name; run 'clean' recipe even if 'clean' file exists
-.PHONY: clean 
+.PHONY: clean test test-build
