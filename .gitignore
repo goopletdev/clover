@@ -10,3 +10,6 @@ build/
 
 # testing exceptions:
 !dictionaries/test-dictionary.json
+
+# unrelated directories:
+data/

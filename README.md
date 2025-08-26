@@ -2,10 +2,14 @@
 Lightweight C implementation of [Plover](https://github.com/openstenoproject/plover)'s simplest functionality 
 
 ## dependencies
-in `test` directory:
+Clover uses libevdev for sending keyboard events.
+### Ubuntu/Debian
+```bash
+sudo apt install libevdev-dev
 ```
-git clone https://github.com/ThrowTheSwitch/Unity.git
-git pull
+### Arch Linux
+```bash
+sudo pacman -S libevdev
 ```
 
 in `assets` directory:
