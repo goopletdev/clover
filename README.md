@@ -38,16 +38,14 @@ https://raw.githubusercontent.com/aerickt/steno-dictionaries/refs/heads/main/lap
 Also, `assets/test-dictionary.json` is currently taken from the first several entries of the above linked `lapwing-base.json` file from the [Lapwing theory](https://github.com/aerickt/steno-dictionaries) for plover. 
 
 ### notes to self
-Document code with Doxygen tags/Javadoc-style doc tags
-
 Consider incorporating https://zserge.com/jsmn/ for json parsing
 
 For steno history, many translations will also result in backspaces. Undoing will therefore also have to keep track of the chars deleted by said backspaces
 
 ### todo:
-assign unique id to each root steno dictionary: 0 for highest-priority, incrementing from there
+- Document code with Doxygen tags/Javadoc-style doc tags
+- implement steno-order sorted dictionary
 - replace "translations" field with object containing function pointers, raw text, source steno dictionary id
-add "collisions" to handle same entry in multiple dictionaries
 - implement functions at bottom of bitmap.h
 - implement devices.c and devices.h using bitmap.h
 
