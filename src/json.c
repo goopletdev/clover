@@ -26,7 +26,6 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
     char val_buffer[CHAR_BUFFER_SIZE] = {0};
     int val_position = 0;
 
-    // 0: before key; 1: in key; 2: after key; 3: in val; 4: after val
     enum keyval_position kv_pos = BEFORE_KEY;
 
     int is_escaped = 0;
@@ -37,6 +36,7 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
             if (kv_pos == BEFORE_KEY || kv_pos == AFTER_KEY) {
                 continue;
             }
+            /*
             switch ((char)c) {
                 case 'n':
                     c = '\n';
@@ -51,9 +51,16 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
                     c = '\r';
                     break;
             }
+            */
             if (kv_pos == IN_KEY) {
+                if ((char)c != '"') {
+                    key_buffer[key_position++] = '\\';
+                }
                 key_buffer[key_position++] = (char)c;
             } else if (kv_pos == IN_VAL) {
+                if ((char)c != '"') {
+                    val_buffer[val_position++] = '\\';
+                }
                 val_buffer[val_position++] = (char)c;
             }
         } else if ((char)c == '"') {
