@@ -46,5 +46,8 @@ For steno history, many translations will also result in backspaces. Undoing wil
 
 ### todo:
 assign unique id to each root steno dictionary: 0 for highest-priority, incrementing from there
-replace "translations" field with object containing function pointers, raw text, source steno dictionary id
+- replace "translations" field with object containing function pointers, raw text, source steno dictionary id
 add "collisions" to handle same entry in multiple dictionaries
+- implement functions at bottom of bitmap.h
+- implement devices.c and devices.h using bitmap.h
+
