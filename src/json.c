@@ -1,5 +1,13 @@
 #include "json.h"
 
+enum keyval_position {
+    BEFORE_KEY,
+    IN_KEY,
+    AFTER_KEY,
+    IN_VAL,
+    AFTER_VAL,
+};
+
 clover_dict* clover_parse_dictionary(const char* file_path) {
     printf("Opening JSON from %s...\n", file_path);
     FILE* fp = fopen(file_path, "r");
@@ -19,14 +27,14 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
     int val_position = 0;
 
     // 0: before key; 1: in key; 2: after key; 3: in val; 4: after val
-    int keyval_pos = 0;
+    enum keyval_position kv_pos = BEFORE_KEY;
 
     int is_escaped = 0;
     int c;
     while ((c = fgetc(fp)) != EOF) {
         if (is_escaped) {
             is_escaped = 0;
-            if (keyval_pos == 0 || keyval_pos == 2) {
+            if (kv_pos == BEFORE_KEY || kv_pos == AFTER_KEY) {
                 continue;
             }
             switch ((char)c) {
@@ -43,14 +51,14 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
                     c = '\r';
                     break;
             }
-            if (keyval_pos == 1) {
+            if (kv_pos == IN_KEY) {
                 key_buffer[key_position++] = (char)c;
-            } else if (keyval_pos == 3) {
+            } else if (kv_pos == IN_VAL) {
                 val_buffer[val_position++] = (char)c;
             }
         } else if ((char)c == '"') {
-            if (++keyval_pos == 4) {
-                keyval_pos = 0;
+            if (++kv_pos == AFTER_VAL) {
+                kv_pos = BEFORE_KEY;
                 key_position = 0;
                 val_position = 0;
                 int size = 0;
@@ -62,9 +70,9 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
             }
         } else if ((char)c == '\\') {
             is_escaped = 1;
-        } else if (keyval_pos == 1) {
+        } else if (kv_pos == IN_KEY) {
             key_buffer[key_position++] = (char)c;
-        } else if (keyval_pos == 3) {
+        } else if (kv_pos == IN_VAL) {
             val_buffer[val_position++] = (char)c;
         } else {
         }
