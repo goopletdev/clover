@@ -47,5 +47,5 @@ For steno history, many translations will also result in backspaces. Undoing wil
 - implement steno-order sorted dictionary
 - replace "translations" field with object containing function pointers, raw text, source steno dictionary id
 - implement functions at bottom of bitmap.h
-- implement devices.c and devices.h using bitmap.h
+- add keyboard state-checking functions
 
