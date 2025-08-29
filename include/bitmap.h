@@ -60,5 +60,5 @@ clover_bitmap clover_bitmap_clear_bit(clover_bitmap m, int bit_pos);
 int clover_bitmap_is_subset_of_bitmap(clover_bitmap subset, clover_bitmap set);
 int clover_bitmaps_are_equivalent(clover_bitmap a, clover_bitmap b);
 char* clover_hex_string_from_bitmap(clover_bitmap m);
-#endif // CLOVER_BITMAP_H
 
+#endif // CLOVER_BITMAP_H
