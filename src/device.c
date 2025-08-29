@@ -1,4 +1,5 @@
 #include "device.h"
+#include <linux/input.h> // for magic number values; delete later
 
 #define LARGE_BUFFER_SIZE 1000
 #define SMALL_BUFFER_SIZE 100
@@ -7,6 +8,14 @@
 #define SYS_PATH "/sys/class/input/"
 #define KEY_PATH "/sys/class/input/%s/device/capabilities/key"
 #define NAME_PATH "/sys/class/input/%s/device/name" 
+
+// hard-coded magic values; delete later
+const int REQUIRED_KEYS[] = {
+    KEY_Q, KEY_A, KEY_W, KEY_S, KEY_E, KEY_D, KEY_R, KEY_F,
+    KEY_C, KEY_V, KEY_T, KEY_G, KEY_Y, KEY_H, KEY_N, KEY_M,
+    KEY_U, KEY_J, KEY_I, KEY_K, KEY_O, KEY_L, KEY_P,
+    KEY_SEMICOLON, KEY_LEFTBRACE, KEY_APOSTROPHE,
+};
 
 int clover_free_device(clover_device d) {
     clover_free_bitmap(d.keys);
@@ -106,3 +115,35 @@ clover_device_list clover_prune_devices(int (*callback)(clover_device), clover_d
 int clover_device_has_key(clover_device d, int key) {
     return clover_bitmap_has_value(d.keys, key);
 } 
+
+int clover_device_has_all_keys(clover_device d, const int* keys, int keylen) {
+    for (int i = 0; i < keylen; i++) {
+        if (!clover_device_has_key(d, keys[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int clover_device_is_keyboard(clover_device d) {
+    return clover_device_has_all_keys(d, REQUIRED_KEYS, 26);
+}
+
+clover_device clover_query_user_for_device(clover_device_list dl) {
+    if (dl.len < 1) {
+        printf("No recognized input device.\n");
+        exit(1);
+    }
+    for (int i = 0; i < dl.len; i++) {
+        printf("(%i) %s\n", i+1, dl.devices.name);
+    }
+    printf("Select keyboard (1-%i): ", dl.len);
+    int device_num;
+    scanf("%d", &device_num);
+    if (device_num > dl.len || device_num < 1) {
+        printf("Disallowed device number.\n");
+        return clover_query_user_for_device(dl);
+    }
+    return dl.devices[device_num - 1];
+}
+

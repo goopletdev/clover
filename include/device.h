@@ -58,4 +58,25 @@ clover_device_list clover_prune_devices(
     int (*callback)(clover_device), clover_device_list devs
 );
 
+/**
+ * Checks whether clover_device.keys bitmap has bit set high
+ */
+int clover_device_has_key(clover_device d, int key);
+
+/**
+ * Checks whether device capabilities include all keys in given array
+ */
+int clover_device_has_all_keys(clover_device d, const in* keys, int keylen);
+
+/**
+ * WARNING: currently uses hardcoded magic numbers in implementation
+ */
+int clover_device_is_keyboard(clover_device d);
+
+/**
+ * Use scanf to allow user to select keyboard device
+ */
+clover_device clover_query_user_for_device(clover_device_list dl);
+
 #endif // CLOVER_DEVICE_H
+
