@@ -66,7 +66,7 @@ int clover_device_has_key(clover_device d, int key);
 /**
  * Checks whether device capabilities include all keys in given array
  */
-int clover_device_has_all_keys(clover_device d, const in* keys, int keylen);
+int clover_device_has_all_keys(clover_device d, const int* keys, int keylen);
 
 /**
  * WARNING: currently uses hardcoded magic numbers in implementation

@@ -104,6 +104,7 @@ clover_device_list clover_prune_devices(int (*callback)(clover_device), clover_d
     for (int i = 0; i < devs.len; i++) {
         if (callback(devs.devices[i])) {
             dl.devices = (clover_device*)realloc(dl.devices, ++dl.len * sizeof(clover_device));
+            dl.devices[dl.len - 1] = devs.devices[i];
         } else {
             clover_free_device(devs.devices[i]);
         }
@@ -113,7 +114,7 @@ clover_device_list clover_prune_devices(int (*callback)(clover_device), clover_d
 }
 
 int clover_device_has_key(clover_device d, int key) {
-    return clover_bitmap_has_value(d.keys, key);
+    return clover_bitmap_bit_is_high(d.keys, key);
 } 
 
 int clover_device_has_all_keys(clover_device d, const int* keys, int keylen) {
@@ -135,7 +136,7 @@ clover_device clover_query_user_for_device(clover_device_list dl) {
         exit(1);
     }
     for (int i = 0; i < dl.len; i++) {
-        printf("(%i) %s\n", i+1, dl.devices.name);
+        printf("(%i) %s [%s]\n", i+1, dl.devices[i].name, dl.devices[i].event_path);
     }
     printf("Select keyboard (1-%i): ", dl.len);
     int device_num;
