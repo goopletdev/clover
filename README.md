@@ -12,6 +12,7 @@ sudo apt install libevdev-dev
 ```bash
 sudo pacman -S libevdev
 ```
+
 ### 2. Clone with submodules
 ```bash
 git clone --recursive https://github.com/goopletdev/clover.git && \
@@ -21,8 +22,10 @@ If you cloned without --recursive:
 ```bash
 git submodule update --init --recursive
 ```
+
 ### 3. Download dictionaries
-Lapwing dictionaries:
+You can manually download dictionaries using curl.
+#### Lapwing dictionaries:
 ```bash
 cd dictionaries && \
 curl --remote-name-all https://raw.githubusercontent.com/aerickt/steno-dictionaries/main/{\
@@ -34,7 +37,7 @@ curl --remote-name-all https://raw.githubusercontent.com/aerickt/steno-dictionar
 } && \
 cd ..
 ```
-Plover dictionaries:
+#### Plover dictionaries:
 ```bash
 cd dictionaries && \
 curl --remote-name-all https://raw.githubusercontent.com/openstenoproject/plover/refs/heads/main/plover/assets/{\
