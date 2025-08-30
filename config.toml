@@ -1,0 +1,21 @@
+# example config file for using lapwing dictionaries
+
+[dictionary]
+path = "dictionaries/"
+dictionaries = [
+    "lapwing-commands.json",
+    "lapwing-numbers.json",
+    "lapwing-uk-additions.json",
+    "lapwing-proper-nouns.json",
+    "lapwing-base.json",
+]
+
+[keyboard]
+path = "/dev/input/event12"
+
+[steno]
+# currently this is unused. STENO_ORDER is defined as a macro
+order = "#STKPWHRAO*EUFRPBLGTSDZ"
+middle_start = 8
+right_start = 13
+
