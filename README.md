@@ -14,7 +14,7 @@ sudo pacman -S libevdev
 ```
 ### 2. Clone with submodules
 ```bash
-git clone --recursive https://github.com/goopletdev/clover.git
+git clone --recursive https://github.com/goopletdev/clover.git && \
 cd clover
 ```
 If you cloned without --recursive:
@@ -24,24 +24,24 @@ git submodule update --init --recursive
 ### 3. Download dictionaries
 Lapwing dictionaries:
 ```bash
-cd dictionaries
+cd dictionaries && \
 curl --remote-name-all https://raw.githubusercontent.com/aerickt/steno-dictionaries/main/{\
     lapwing-commands.json,\
     lapwing-numbers.json,\
     lapwing-uk-additions.json,\
     lapwing-proper-nouns.json,\
     lapwing-base.json\
-}
+} && \
 cd ..
 ```
 Plover dictionaries:
 ```bash
-cd dictionaries
+cd dictionaries && \
 curl --remote-name-all https://raw.githubusercontent.com/openstenoproject/plover/refs/heads/main/plover/assets/{\
     user.json,\
     commands.json,\
     main.json\
-}
+} && \
 cd ..
 ```
 Also, `dictionaries/test-dictionary.json` is currently taken from the first several entries of the above linked `lapwing-base.json` file from the [Lapwing theory](https://github.com/aerickt/steno-dictionaries) for plover. 
