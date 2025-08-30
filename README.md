@@ -21,21 +21,40 @@ If you cloned without --recursive:
 ```bash
 git submodule update --init --recursive
 ```
-### 3. Build
+### 3. Download dictionaries
+Lapwing dictionaries:
+```bash
+cd dictionaries
+curl --remote-name-all https://raw.githubusercontent.com/aerickt/steno-dictionaries/main/{\
+    lapwing-commands.json,\
+    lapwing-numbers.json,\
+    lapwing-uk-additions.json,\
+    lapwing-proper-nouns.json,\
+    lapwing-base.json\
+}
+cd ..
+```
+Plover dictionaries:
+```bash
+cd dictionaries
+curl --remote-name-all https://raw.githubusercontent.com/openstenoproject/plover/refs/heads/main/plover/assets/{\
+    user.json,\
+    commands.json,\
+    main.json\
+}
+cd ..
+```
+Also, `dictionaries/test-dictionary.json` is currently taken from the first several entries of the above linked `lapwing-base.json` file from the [Lapwing theory](https://github.com/aerickt/steno-dictionaries) for plover. 
+
+### 4. Build
 ```bash
 make
 ```
-### 4. Run tests
+
+### 5. Run tests
 ```bash
 make test
 ```
-
-## Dictionaries:
-In `dictionaries/`:
-```
-https://raw.githubusercontent.com/aerickt/steno-dictionaries/refs/heads/main/lapwing-base.json
-```
-Also, `assets/test-dictionary.json` is currently taken from the first several entries of the above linked `lapwing-base.json` file from the [Lapwing theory](https://github.com/aerickt/steno-dictionaries) for plover. 
 
 ### notes to self
 Consider incorporating https://zserge.com/jsmn/ for json parsing
