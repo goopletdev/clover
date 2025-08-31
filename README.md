@@ -70,4 +70,4 @@ For steno history, many translations will also result in backspaces. Undoing wil
 - replace "translations" field with object containing function pointers, raw text, source steno dictionary id
 - implement functions at bottom of bitmap.h
 - add keyboard state-checking functions
-- completely rework keyboard selection in preference of using config file. this current system is silly
+- make clover_pretty_chord and clover_paper_tape use buffers
