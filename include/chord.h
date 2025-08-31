@@ -88,6 +88,16 @@ char* clover_pretty_chord(clover_chord chord);
 char* clover_paper_tape(clover_chord chord);
 
 /**
+ * Prints tape to std out without allocating memory
+ */
+void clover_put_tape(clover_chord chord);
+
+/**
+ * Prints pretty chord to std out w/o allocating memory
+ */
+void clover_put_pretty_chord(clover_chord chord);
+
+/**
  * Parses the key of a dictionary entry into an clover_chord.
  */
 clover_chord clover_parse_chord(char* chord);

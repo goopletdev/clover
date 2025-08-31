@@ -1,3 +1,5 @@
+# example config file for using lapwing dictionaries
+
 [dictionary]
 path = "dictionaries/"
 dictionaries = [

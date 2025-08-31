@@ -22,15 +22,21 @@ void handle_cli_args(int argc, char **argv) {
 }
 
 void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, clover_dict* dict) {
-    printf("\r%s | ", clover_paper_tape(chord));
+    putchar("\r");
+    clover_put_tape(chord);
+    printf(" | ");
     clover_dict* entry = clover_dict_get(dict, chord);
-    const char* translation = entry ? entry->translations.entries[0] : NULL;
-    if (!translation) {
+    const char* translation;
+    if (entry) {
+        translation = (char*)malloc((strlen(entry->translations.entries[0]) + 1) * sizeof(char));
+        strcpy(translation, entry->translations.entries[0]);
+    } else {
         translation = clover_pretty_chord(chord);
     }
     printf("%s\n", translation);
     send_string(uinput_dev, translation);
     send_string(uinput_dev, " ");
+    free(translation);
 }
 
 void clover__event_loop(int fd, struct libevdev_uinput* uinput_dev, clover_dict* dict) {   
@@ -57,6 +63,9 @@ int main(int argc, char** argv) {
      * CONFIG PARSING
      *****************************************************/
     toml_result_t result = toml_parse_file_ex("config.toml");
+    if (!result.ok) {
+        result = toml_parse_file_ex("default-config.toml");
+    }
     if (!result.ok) {
         printf("Could not parse .toml\n");
         exit(1);
@@ -127,12 +136,9 @@ int main(int argc, char** argv) {
     int grab = 1;
     ioctl(kbd_fd, EVIOCGRAB, &grab);
 
-
-
     /******************************************************
      * TOML CLEANUP
      *****************************************************/
-    // free toml object
     toml_free(result);
 
     /******************************************************
@@ -145,6 +151,7 @@ int main(int argc, char** argv) {
      *****************************************************/
     close(kbd_fd);
     close(uinput_fd);
+    clover_free_dict(d);
 
     return 0;
 }

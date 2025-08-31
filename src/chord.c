@@ -43,6 +43,29 @@ char* clover_paper_tape(clover_chord chord) {
     return tape;
 }
 
+void clover_put_tape(clover_chord chord) {
+    for (size_t i = 0; i < STENO_ORDER_LEN; i++) {
+        putchar(chord & (1U << i) ? STENO_ORDER[i] : ' ');
+    }
+}
+
+void clover_put_pretty_chord(clover_chord chord) {
+    chord &= STENO_MASK;
+    int separator = (chord & R_KEY_MASK) && !(chord & M_KEY_MASK) ? 1 : 0;
+    int bit_pos;
+    while (chord & L_KEY_MASK) {
+        chord &= ~(1U << (bit_pos = __builtin_ctz(chord)));
+        putchar(STENO_ORDER[bit_pos]);
+    }
+    if (separator) {
+        putchar('-');
+    }
+    while (chord) {
+        chord &= ~(1U << (bit_pos = __builtin_ctz(chord)));
+        putchar(STENO_ORDER[bit_pos]);
+    }
+}
+
 int clover_chord_compare(clover_chord chord1, clover_chord chord2) {
     int comparison;
     for (clover_chord bitmask = 1; bitmask < STENO_MASK; bitmask <<= 1) {

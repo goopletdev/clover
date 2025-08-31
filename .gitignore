@@ -12,5 +12,5 @@ build/
 !dictionaries/test-dictionary.json
 !dictionaries/test-dictionary-2.json
 
-# unrelated directories:
-data/
+# config file:
+config.toml
