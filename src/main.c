@@ -1,7 +1,7 @@
 #include "chord.h"
 #include "event-listener.h"
 #include "event-emulator.h"
-#include "hash.h"
+#include "table.h"
 #include "json.h"
 
 #include <fcntl.h>
@@ -23,8 +23,8 @@ void handle_cli_args(int argc, char **argv) {
 
 void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, clover_dict* dict) {
     printf("\r%s | ", clover_paper_tape(chord));
-    clover_dict* entry = clover_get(dict, chord);
-    const char* translation = entry ? clover_dict_translation(entry) : NULL;
+    clover_dict* entry = clover_dict_get(dict, chord);
+    const char* translation = entry ? entry->translations.entries[0] : NULL;
     if (!translation) {
         translation = clover_pretty_chord(chord);
     }
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     }
 
     // initialize clover dictionary
-    clover_dict* d = clover_init_dict(0, NULL, NULL);
+    clover_dict* d = clover_table_init_dict(0, NULL);
 
     // parse each dictionary into single dictionary object
     for (int i = 0; i < dict_array.u.arr.size; i++) {
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
         strcat(buffer, file_name);
         d = clover_parse_dictionary(buffer, d);
     }
-    printf("Finished parsing dictionary. Size: %i\n", clover_dict_size(d));
+    printf("Finished parsing dictionary. Size: %i\n", d->children.size);
 
     /******************************************************
      * KEYBOARD EVENT

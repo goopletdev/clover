@@ -71,4 +71,3 @@ For steno history, many translations will also result in backspaces. Undoing wil
 - implement functions at bottom of bitmap.h
 - add keyboard state-checking functions
 - completely rework keyboard selection in preference of using config file. this current system is silly
-
