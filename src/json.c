@@ -8,7 +8,7 @@ enum keyval_position {
     AFTER_VAL,
 };
 
-clover_dict* clover_parse_dictionary(const char* file_path) {
+clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d) {
     printf("Opening JSON from %s...\n", file_path);
     FILE* fp = fopen(file_path, "r");
     if (fp == NULL) {
@@ -16,11 +16,6 @@ clover_dict* clover_parse_dictionary(const char* file_path) {
         exit(1);
     }
 
-    clover_dict* d = clover_init_dict(0, NULL, NULL);
-    if (d == NULL) {
-        printf("Failed dictionary initialization\n");
-        exit(1);
-    }
     char key_buffer[CHAR_BUFFER_SIZE] = {0};
     int key_position = 0;
     char val_buffer[CHAR_BUFFER_SIZE] = {0};

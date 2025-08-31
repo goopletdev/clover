@@ -20,6 +20,6 @@
  *      key-value pairs where both the key and the value 
  *      are simple string literals
  */
-clover_dict* clover_parse_dictionary(const char* file_path);
+clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d);
 
 #endif
