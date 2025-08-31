@@ -61,7 +61,6 @@ int main(int argc, char** argv) {
         printf("Could not parse .toml\n");
         exit(1);
     }
-    printf("Dictionary path: %s\n", dict_path.u.str.ptr);
 
     /******************************************************
      * DICTIONARY PARSING
@@ -72,6 +71,8 @@ int main(int argc, char** argv) {
         printf("missing or invalid 'dictionary.path' property in config\n");
         exit(1);
     }
+    printf("Dictionary path: %s\n", dict_path.u.str.ptr);
+
 
     // get array of dictionary paths
     toml_datum_t dict_array = toml_seek(result.toptab, "dictionary.dictionaries");
@@ -92,8 +93,8 @@ int main(int argc, char** argv) {
         }
         printf("dictionary [%i]: %s\n", i, elem.u.str.ptr);
         char buffer[BUFFER_SIZE] = {'\0'};
-        strcpy(buffer, dict_path);
-        strcat(buffer, file_name);
+        strcpy(buffer, dict_path.u.str.ptr);
+        strcat(buffer, elem.u.str.ptr);
         d = clover_parse_dictionary(buffer, d);
     }
     printf("Finished parsing dictionary. Size: %i\n", d->children.size);
@@ -103,7 +104,7 @@ int main(int argc, char** argv) {
      *****************************************************/
     // get event path
     toml_datum_t event_path_toml = toml_seek(result.toptab, "keyboard.path");
-    if (event_path.type != TOML_STRING) {
+    if (event_path_toml.type != TOML_STRING) {
         printf("missing or invalid 'keyboard.path' property in config\n");
         exit(1);
     }

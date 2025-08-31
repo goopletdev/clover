@@ -31,22 +31,6 @@ clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d) {
             if (kv_pos == BEFORE_KEY || kv_pos == AFTER_KEY) {
                 continue;
             }
-            /*
-            switch ((char)c) {
-                case 'n':
-                    c = '\n';
-                    break;
-                case 't':
-                    c = '\t';
-                    break;
-                case 'b':
-                    c = '\b';
-                    break;
-                case 'r':
-                    c = '\r';
-                    break;
-            }
-            */
             if (kv_pos == IN_KEY) {
                 if ((char)c != '"') {
                     key_buffer[key_position++] = '\\';
