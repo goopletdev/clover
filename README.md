@@ -29,11 +29,11 @@ You can manually download dictionaries using curl.
 ```bash
 cd dictionaries && \
 curl --remote-name-all https://raw.githubusercontent.com/aerickt/steno-dictionaries/main/{\
-    lapwing-commands.json,\
-    lapwing-numbers.json,\
-    lapwing-uk-additions.json,\
-    lapwing-proper-nouns.json,\
-    lapwing-base.json\
+lapwing-commands.json,\
+lapwing-numbers.json,\
+lapwing-uk-additions.json,\
+lapwing-proper-nouns.json,\
+lapwing-base.json\
 } && \
 cd ..
 ```
@@ -41,9 +41,9 @@ cd ..
 ```bash
 cd dictionaries && \
 curl --remote-name-all https://raw.githubusercontent.com/openstenoproject/plover/refs/heads/main/plover/assets/{\
-    user.json,\
-    commands.json,\
-    main.json\
+user.json,\
+commands.json,\
+main.json\
 } && \
 cd ..
 ```
