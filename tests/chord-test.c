@@ -15,17 +15,39 @@ void clvrChordSize_shouldCountHighBits_ignoringFlags(void) {
 }
 
 void clvrPrettyChord_shouldEncodeUInts_withHyphen(void) {
-    TEST_ASSERT_EQUAL_STRING("#", clover_pretty_chord(1U));
-    TEST_ASSERT_EQUAL_STRING("#KRO*PL", clover_pretty_chord(165513U));
-    TEST_ASSERT_EQUAL_STRING("-F", clover_pretty_chord(8192U));
-    TEST_ASSERT_EQUAL_STRING("TP-PL", clover_pretty_chord(163860U));
+    char* pretty = clover_pretty_chord(1U);
+    TEST_ASSERT_EQUAL_STRING("#", pretty);
+    free(pretty);
+
+    pretty = clover_pretty_chord(165513U);
+    TEST_ASSERT_EQUAL_STRING("#KRO*PL", pretty);
+    free(pretty);
+
+    pretty = clover_pretty_chord(8192U);
+    TEST_ASSERT_EQUAL_STRING("-F", pretty);
+    free(pretty);
+
+    pretty = clover_pretty_chord(163860U);
+    TEST_ASSERT_EQUAL_STRING("TP-PL", pretty);
+    free(pretty);
 }
 
 void clvrPaperTape_shouldEncodeUInts(void) {
-    TEST_ASSERT_EQUAL_STRING("#                      ", clover_paper_tape(1U));
-    TEST_ASSERT_EQUAL_STRING("#  K   R O*    P L     ", clover_paper_tape(165513U));
-    TEST_ASSERT_EQUAL_STRING("             F         ", clover_paper_tape(8192U));
-    TEST_ASSERT_EQUAL_STRING("  T P          P L     ", clover_paper_tape(163860U));
+    char* tape = clover_paper_tape(1U);
+    TEST_ASSERT_EQUAL_STRING("#                      ", tape);
+    free(tape);
+    
+    tape = clover_paper_tape(165513U);
+    TEST_ASSERT_EQUAL_STRING("#  K   R O*    P L     ", tape);
+    free(tape);
+
+    tape = clover_paper_tape(8192U);
+    TEST_ASSERT_EQUAL_STRING("             F         ", tape);
+    free(tape);
+
+    tape = clover_paper_tape(163860U);
+    TEST_ASSERT_EQUAL_STRING("  T P          P L     ", tape);
+    free(tape);
 }
 
 void clover_chord_compare_should_observe_steno_order(void) {
@@ -50,12 +72,14 @@ void clvrParseCompoundChord_shouldHandleArbitraryChordSizes(void) {
     chord = clover_parse_compound_chord(key, &size);
     TEST_ASSERT_EQUAL(5, size);
     TEST_ASSERT_EQUAL(clover_parse_chord("STKPWAO"), chord[0]);
+    free(chord);
 
     size = 0;
     key = "#";
     chord = clover_parse_compound_chord(key, &size);
     TEST_ASSERT_EQUAL(1, size);
     TEST_ASSERT_EQUAL(clover_parse_chord("#"), chord[0]);
+    free(chord);
 
     size = 0;
     key = "SRE/TER/KWREU/TPHAEUR/KWREU/KWRAPB/-Z";
@@ -68,6 +92,7 @@ void clvrParseCompoundChord_shouldHandleArbitraryChordSizes(void) {
     TEST_ASSERT_EQUAL(clover_parse_chord("KWREU"), chord[4]);
     TEST_ASSERT_EQUAL(clover_parse_chord("KWRAPB"), chord[5]);
     TEST_ASSERT_EQUAL(clover_parse_chord("-Z"), chord[6]);
+    free(chord);
 }
 
 int main(void) {

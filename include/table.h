@@ -21,6 +21,11 @@ struct clover__dictT {
 };
 
 /**
+ * @brief Recursively free clover_dict struct
+ */
+void clover_free_dict(clover_dict* d);
+
+/**
  * @brief Makes new dict with child capacity of 8.
  * @return malloc'd clover_dict with calloc'd children.dicts
  * @note uses malloc and calloc; caller must free()

@@ -51,6 +51,7 @@ clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d) {
                 clover_chord* id;
                 id = clover_parse_compound_chord(key_buffer, &size);
                 clover_dict_push_entry(d, id, size, val_buffer);
+                free(id);
                 memset(key_buffer, 0, CHAR_BUFFER_SIZE * sizeof(char));
                 memset(val_buffer, 0, CHAR_BUFFER_SIZE * sizeof(char));
             }

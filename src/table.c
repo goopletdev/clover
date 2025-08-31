@@ -1,5 +1,19 @@
 #include "table.h"
 
+void clover_free_dict(clover_dict* d) {
+    for (int i = 0; i < d->children.capacity; i++) {
+        if (d->children.dicts[i]) {
+            clover_free_dict(d->children.dicts[i]);
+        }
+    }
+    free(d->children.dicts);
+    for (int i = 0; i < d->translations.len; i++) {
+        free(d->translations.entries[i]);
+    }
+    free(d->translations.entries);
+    free(d);
+}
+
 clover_dict* clover_table_init_dict(clover_chord id, clover_dict* parent) {
     clover_dict* d = (clover_dict*)malloc(sizeof(clover_dict));
     d->id = id;
@@ -26,40 +40,6 @@ int clover__table_hash_function(clover_dict* d, clover_chord id) {
         hash ^= id;
     }
     return (int)(hash % d->children.capacity);
-}
-
-clover_dict* clover__dict_get(clover_dict* parent, clover_chord target_id, int create) {
-    int index = clover__table_hash_function(parent, target_id);
-    int max_index = parent->children.capacity;
-    clover_dict* current_dict;
-
-linear_probe_get:
-    for (int i = index; i < max_index; i++) {
-        if ((current_dict = parent->children.dicts[i]) != NULL) {
-            if (current_dict->id == target_id) {
-                return current_dict;
-            }
-        } else {
-            if (create) {
-                current_dict = clover_table_init_dict(target_id, parent);
-                parent->children.dicts[i] = current_dict;
-                return current_dict;
-            }
-            return NULL;
-        }
-    }
-    max_index = index;
-    if (index) {
-        index = 0;
-        goto linear_probe_get;
-    } else {
-        printf("clover_get error\n");
-        exit(1);
-    }
-}
-
-clover_dict* clover_dict_get(clover_dict* parent, clover_chord target_id) {
-    return clover__dict_get(parent, target_id, 0);
 }
 
 // ONLY for inserting children with unique ID's. 
@@ -97,15 +77,48 @@ void clover__dict_resize(clover_dict* parent) {
             clover__dict_insert_child(&temp, child);
         }
     }
-
+    free(parent->children.dicts);
     parent->children = temp.children;
+}
+
+clover_dict* clover__dict_get(clover_dict* parent, clover_chord target_id, int create) {
+    int index = clover__table_hash_function(parent, target_id);
+    int max_index = parent->children.capacity;
+    clover_dict* current_dict;
+
+linear_probe_get:
+    for (int i = index; i < max_index; i++) {
+        if ((current_dict = parent->children.dicts[i]) != NULL) {
+            if (current_dict->id == target_id) {
+                return current_dict;
+            }
+        } else {
+            if (create) {
+                current_dict = clover_table_init_dict(target_id, parent);
+                if (parent->children.capacity >> 1 <= ++parent->children.size) {
+                    clover__dict_resize(parent);
+                }
+                return clover__dict_insert_child(parent, current_dict);
+            }
+            return NULL;
+        }
+    }
+    max_index = index;
+    if (index) {
+        index = 0;
+        goto linear_probe_get;
+    } else {
+        printf("clover_get error\n");
+        exit(1);
+    }
+}
+
+clover_dict* clover_dict_get(clover_dict* parent, clover_chord target_id) {
+    return clover__dict_get(parent, target_id, 0);
 }
 
 clover_dict* clover_dict_push_entry(clover_dict* d, clover_chord* id, int id_size, char* translation) {
     for (int i = 0; i < id_size; i++) {
-        if (d->children.capacity >> 1 <= ++d->children.size) {
-            clover__dict_resize(d);
-        }
         d = clover__dict_get(d, id[i], 1);
     }
     clover_table_dict_add_translation(d, translation);

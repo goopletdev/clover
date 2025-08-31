@@ -22,4 +22,4 @@
  */
 clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d);
 
-#endif
+#endif // CLOVER_JSON_H
