@@ -14,29 +14,41 @@
 
 const int BUFFER_SIZE = 1024;
 
+// temporary escape check until commands are implemented
+clover_chord ESCAPE;
+
 void handle_cli_args(int argc, char **argv) {
     printf("Running ");
+    // ESCAPE sequence until commands are implemented
+    ESCAPE = clover_parse_chord("PHROLG");
     for (int i = 0; i < argc; i++) {
         printf("%s\n", argv[i]);
     }
 }
 
 void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, clover_dict* dict) {
-    putchar("\r");
+    putchar('\r');
     clover_put_tape(chord);
     printf(" | ");
     clover_dict* entry = clover_dict_get(dict, chord);
-    const char* translation;
+    char* translation;
     if (entry) {
         translation = (char*)malloc((strlen(entry->translations.entries[0]) + 1) * sizeof(char));
         strcpy(translation, entry->translations.entries[0]);
+        printf(entry->children.size ? "%s -> ...\n" : "%s\n", translation);
     } else {
         translation = clover_pretty_chord(chord);
+        printf("%s\n", translation);
     }
-    printf("%s\n", translation);
+    
     send_string(uinput_dev, translation);
     send_string(uinput_dev, " ");
     free(translation);
+    // temporary escape check until commands are implemented
+    if (chord == ESCAPE) {
+        printf("Escape sequence {PLOVER:TOGGLE}");
+        exit(1);
+    }
 }
 
 void clover__event_loop(int fd, struct libevdev_uinput* uinput_dev, clover_dict* dict) {   
@@ -101,7 +113,8 @@ int main(int argc, char** argv) {
             exit(1);
         }
         printf("dictionary [%i]: %s\n", i, elem.u.str.ptr);
-        char buffer[BUFFER_SIZE] = {'\0'};
+        char buffer[BUFFER_SIZE];
+        memset(buffer, 0, BUFFER_SIZE);
         strcpy(buffer, dict_path.u.str.ptr);
         strcat(buffer, elem.u.str.ptr);
         d = clover_parse_dictionary(buffer, d);
@@ -155,4 +168,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
