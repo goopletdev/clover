@@ -14,6 +14,15 @@
 
 #include "tomlc17.h"
 
+#define COL_RESET "\x1B[0m"
+#define COL_RED "\x1B[31m"
+#define COL_GREEN "\x1B[32m"
+#define COL_YELLOW "\x1B[33m"
+#define COL_BLUE "\x1B[34m"
+#define COL_MAGENTA "\x1B[35m"
+#define COL_CYAN "\x1B[36m"
+#define COL_WHITE "\x1B[37m"
+
 const int BUFFER_SIZE = 1024;
 
 // temporary escape check until commands are implemented
@@ -40,13 +49,23 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
     printf(" | ");
     clover_dict* entry = clover_dict_get(dict, chord);
     char* translation;
-    if (entry) {
+    if (entry && entry->translations.entries) {
         translation = (char*)malloc((strlen(entry->translations.entries[0]) + 1) * sizeof(char));
         strcpy(translation, entry->translations.entries[0]);
-        printf(entry->children.size ? "%s -> ...\n" : "%s\n", translation);
+        printf("%s", translation);
+        if (entry->children.size) {
+            printf("%s -> ... (%i)%s\n", COL_MAGENTA, entry->children.size, COL_RESET);
+        } else {
+            putchar('\n');
+        }
     } else {
         translation = clover_pretty_chord(chord);
-        printf("%s\n", translation);
+        printf("%s%s%s", COL_YELLOW, translation, COL_RESET);
+        if (entry && entry->children.size) {
+            printf("%s -> ... (%i)%s\n", COL_MAGENTA, entry->children.size, COL_RESET);
+        } else {
+            putchar('\n');
+        }
     }
 
     if (chord == ESCAPE) {
@@ -64,6 +83,8 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
 void clover__event_loop(int fd, struct libevdev_uinput* uinput_dev, clover_dict* dict) {   
     clover_chord chord = 0;
     int keys_down = 0;
+
+    printf("%sREADY%s\n", COL_GREEN, COL_RESET);
 
     for (;;) {
         chord = clover_handle_key_event(fd, chord, &keys_down);
@@ -109,7 +130,7 @@ int main(int argc, char** argv) {
     // get array of dictionary paths
     toml_datum_t dict_array = toml_seek(result.toptab, "dictionary.dictionaries");
     if (dict_array.type != TOML_ARRAY) {
-        printf("missing or invalid 'dictionary.dictionaries' property in config");
+        printf("missing or invalid 'dictionary.dictionaries' property in config\n");
         exit(1);
     }
 
@@ -120,10 +141,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < dict_array.u.arr.size; i++) {
         toml_datum_t elem = dict_array.u.arr.elem[i];
         if (elem.type != TOML_STRING) {
-            printf("dictionary.dictionaries element is not a string");
+            printf("dictionary.dictionaries element is not a string\n");
             exit(1);
         }
-        printf("dictionary [%i]: %s\n", i, elem.u.str.ptr);
         char buffer[BUFFER_SIZE];
         memset(buffer, 0, BUFFER_SIZE);
         strcpy(buffer, dict_path.u.str.ptr);
@@ -155,7 +175,7 @@ int main(int argc, char** argv) {
     int uinput_fd = open("/dev/uinput", O_RDWR);
     libevdev_uinput_create_from_device(kbd_dev, uinput_fd, &virtkbd_dev);
     const char *virtkbd_path = libevdev_uinput_get_devnode(virtkbd_dev);
-    printf("Virtual keyboard device %s\n", virtkbd_path);
+    printf("Virtual keyboard path: \"%s\"\n", virtkbd_path);
 
     int grab = 1;
     ioctl(kbd_fd, EVIOCGRAB, &grab);

@@ -9,7 +9,6 @@ enum keyval_position {
 };
 
 clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d) {
-    printf("Opening JSON from %s...\n", file_path);
     FILE* fp = fopen(file_path, "r");
     if (fp == NULL) {
         printf("Error opening dictionary %s\n", file_path);
@@ -65,10 +64,7 @@ clover_dict* clover_parse_dictionary(const char* file_path, clover_dict* d) {
         }
     }
 
-    printf("finished parsing; closing file...\n");
-
     fclose(fp);
-    printf("file closed.\n");
-
     return d;
 }
+
