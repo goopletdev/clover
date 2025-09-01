@@ -124,8 +124,6 @@ int main(int argc, char** argv) {
         printf("missing or invalid 'dictionary.path' property in config\n");
         exit(1);
     }
-    printf("Dictionary path: %s\n", dict_path.u.str.ptr);
-
 
     // get array of dictionary paths
     toml_datum_t dict_array = toml_seek(result.toptab, "dictionary.dictionaries");
@@ -174,8 +172,6 @@ int main(int argc, char** argv) {
     struct libevdev_uinput* virtkbd_dev;
     int uinput_fd = open("/dev/uinput", O_RDWR);
     libevdev_uinput_create_from_device(kbd_dev, uinput_fd, &virtkbd_dev);
-    const char *virtkbd_path = libevdev_uinput_get_devnode(virtkbd_dev);
-    printf("Virtual keyboard path: \"%s\"\n", virtkbd_path);
 
     int grab = 1;
     ioctl(kbd_fd, EVIOCGRAB, &grab);

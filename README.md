@@ -90,4 +90,4 @@ For steno history, many translations will also result in backspaces. Undoing wil
 - implement steno-order sorted dictionary
 - replace "translations" field with object containing function pointers, raw text, source steno dictionary id
 - add keyboard state-checking functions
-- make clover_pretty_chord and clover_paper_tape use buffers
+- make `clover_pretty_chord` and `clover_paper_tape` use buffers
