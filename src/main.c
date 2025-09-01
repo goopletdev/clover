@@ -17,7 +17,7 @@
 const int BUFFER_SIZE = 1024;
 
 // temporary escape check until commands are implemented
-const char* ESCAPE_CHORD = "PHROLG";
+char* ESCAPE_CHORD = "PHROLG";
 clover_chord ESCAPE;
 
 void handle_cli_args(int argc, char **argv) {
@@ -48,14 +48,16 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
         translation = clover_pretty_chord(chord);
         printf("%s\n", translation);
     }
-    
-    send_string(uinput_dev, translation);
-    send_string(uinput_dev, " ");
-    free(translation);
-    // temporary escape check until commands are implemented
+
     if (chord == ESCAPE) {
-        printf("\nEscape sequence {PLOVER:TOGGLE}\n");
+        // temporary escape check until commands are implemented
+        printf("\rEscape sequence {PLOVER:TOGGLE}\n");
+        free(translation);
         exit(0);
+    } else {
+        send_string(uinput_dev, translation);
+        send_string(uinput_dev, " ");
+        free(translation);
     }
 }
 
@@ -158,8 +160,8 @@ int main(int argc, char** argv) {
     int grab = 1;
     ioctl(kbd_fd, EVIOCGRAB, &grab);
 
-    clover_keyboard keyboard_state;
-    int ioctlVal = ioctl(kbd_fd, EVIOCGKEY(sizeof(keyboard_state.state)), keyboard_state.state);
+    // clover_keyboard keyboard_state;
+    // int ioctlVal = ioctl(kbd_fd, EVIOCGKEY(sizeof(keyboard_state.state)), keyboard_state.state);
 
     /******************************************************
      * TOML CLEANUP
