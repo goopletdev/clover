@@ -58,7 +58,28 @@ make
 ```bash
 make test
 ```
+For further debugging and checking for memory leaks, consider installing Valgrind.
+#### Ubuntu/Debian
+```bash
+sudo apt install valgrind
+```
+#### Arch Linux
+```bash
+sudo pacman -S valgrind
+```
 
+### 6. Find and set keyboard
+If you know the path to your keyboard device event handler, set it in `default-config.toml` (or `config.toml` for persistence). If you don't, you can use evtest (you may have to install it first):
+```bash
+sudo evtest
+```
+Try selecting an event number; if the console starts logging event data from your keystrokes, that's the event number you want. Under `[keyboard]` in `config.toml`, set `path` to `"dev/input/eventYOUR_EVENT_NUMBER"`
+
+### 7. Running Clover
+Clover needs sudo priveleges to open device paths:
+```bash
+sudo make run
+```
 ### notes to self
 Consider incorporating https://zserge.com/jsmn/ for json parsing
 
@@ -68,6 +89,5 @@ For steno history, many translations will also result in backspaces. Undoing wil
 - Document code with Doxygen tags/Javadoc-style doc tags
 - implement steno-order sorted dictionary
 - replace "translations" field with object containing function pointers, raw text, source steno dictionary id
-- implement functions at bottom of bitmap.h
 - add keyboard state-checking functions
 - make clover_pretty_chord and clover_paper_tape use buffers

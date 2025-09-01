@@ -1,3 +1,4 @@
+#include "bitmap.h"
 #include "chord.h"
 #include "event-listener.h"
 #include "event-emulator.h"
@@ -5,6 +6,7 @@
 #include "json.h"
 
 #include <fcntl.h>
+#include <limits.h> // CHAR_BIT
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,15 +17,21 @@
 const int BUFFER_SIZE = 1024;
 
 // temporary escape check until commands are implemented
+const char* ESCAPE_CHORD = "PHROLG";
 clover_chord ESCAPE;
 
 void handle_cli_args(int argc, char **argv) {
-    printf("Running ");
-    // ESCAPE sequence until commands are implemented
-    ESCAPE = clover_parse_chord("PHROLG");
-    for (int i = 0; i < argc; i++) {
-        printf("%s\n", argv[i]);
+    if (argc == 1) {
+        printf("Running %s with no args...\n", argv[0]);
+    } else {
+        printf("Running %s...\n", argv[0]);
+        for (int i = 0; i < argc; i++) {
+            printf("Arg %i: %s\n", i, argv[i]);
+        }
     }
+    // ESCAPE sequence until commands are implemented
+    ESCAPE = clover_parse_chord(ESCAPE_CHORD);
+    printf("To close Clover: interrupt or chord \"%s\" on captive device.\n", ESCAPE_CHORD);
 }
 
 void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, clover_dict* dict) {
@@ -46,8 +54,8 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
     free(translation);
     // temporary escape check until commands are implemented
     if (chord == ESCAPE) {
-        printf("Escape sequence {PLOVER:TOGGLE}");
-        exit(1);
+        printf("\nEscape sequence {PLOVER:TOGGLE}\n");
+        exit(0);
     }
 }
 
@@ -76,6 +84,7 @@ int main(int argc, char** argv) {
      *****************************************************/
     toml_result_t result = toml_parse_file_ex("config.toml");
     if (!result.ok) {
+        // try loading default config file
         result = toml_parse_file_ex("default-config.toml");
     }
     if (!result.ok) {
@@ -119,7 +128,7 @@ int main(int argc, char** argv) {
         strcat(buffer, elem.u.str.ptr);
         d = clover_parse_dictionary(buffer, d);
     }
-    printf("Finished parsing dictionary. Size: %i\n", d->children.size);
+    printf("Finished parsing dictionary. Root dictionary size: %i\n", d->children.size);
 
     /******************************************************
      * KEYBOARD EVENT
@@ -148,6 +157,9 @@ int main(int argc, char** argv) {
 
     int grab = 1;
     ioctl(kbd_fd, EVIOCGRAB, &grab);
+
+    clover_keyboard keyboard_state;
+    int ioctlVal = ioctl(kbd_fd, EVIOCGKEY(sizeof(keyboard_state.state)), keyboard_state.state);
 
     /******************************************************
      * TOML CLEANUP
