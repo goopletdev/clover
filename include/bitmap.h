@@ -10,12 +10,7 @@
 #define CLOVER_TEST_BIT(bit, array) ((array)[(bit)/BITS_PER_LONG]) & (1UL << ((bit)%BITS_PER_LONG))
 #define CLOVER_SET_BIT(bit, array) ((array)[(bit)/BITS_PER_LONG]) &= (1UL << ((bit)%BITS_PER_LONG))
 #define CLOVER_BITMAP_LENGTH ((KEY_MAX / BITS_PER_LONG) + 1)
-typedef unsigned long clover_bitmap[(KEY_MAX / BITS_PER_LONG) + 1];
 
-typedef struct clover__keyboardT clover_keyboard;
-struct clover__keyboardT {
-    clover_bitmap keys;
-    clover_bitmap state;
-};
+typedef unsigned long clover_bitmap[(KEY_MAX / BITS_PER_LONG) + 1];
 
 #endif // CLOVER_BITMAP_H
