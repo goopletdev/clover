@@ -4,20 +4,50 @@
 #include <libevdev/libevdev-uinput.h>
 #include "table.h"
 #include "bitmap.h"
+#include "silly-string.h"
+
+typedef enum clover_macro {
+    UNKNOWN_COMMAND,
+    RETRO_INSERT_SPACE,
+    RETRO_DELETE_SPACE,
+    UNDO,
+    REPEAT_LAST_STROKE,
+    RETRO_TOGGLE_ASTERISK,
+};
+
+typedef enum clover_command {
+    UNKNOWN_COMMAND,
+    SUSPEND,
+    RESUME,
+    TOGGLE,
+    ADD_TRANSLATION,
+    LOOKUP,
+    SUGGESTIONS,
+    CONFIGURE,
+    FOCUS,
+    QUIT,
+    SET_CONFIG, // takes args
+};
 
 typedef struct clover__instructionT clover_instruction;
 // i don't think deletedText will work correctly with unicode
 // figure that out later ig
 struct clover__instructionT {
     enum {
-        NONE, ASCII, UNICODE, COMMAND, DELETE, 
+        NONE, ASCII, UNICODE, COMMAND, MACRO, META, DELETE, MOVEMENT,
     } type;
     union {
         char* inputText;
         char* deletedText;
         char* keyCombo;
         int* unicode;
+        clover_command command;
+        clover_macro macro;
+        char* meta;
+        int movement;
     } u;
+    char* args;
+    struct clover__instructionT* next;
 };
 
 typedef struct clover__historyT clover_history;
@@ -62,8 +92,12 @@ struct clover__instanceT {
     clover_dict* root;
 };
 
+void clover_engine_init();
+
 void clover_free_history(clover_history* h);
 
 void clover_instance_push_history(clover_instance* ci, clover_history* new);
+
+void clover_engine_cleanup();
 
 #endif // CLOVER_ENGINE_H
