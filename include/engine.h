@@ -2,20 +2,21 @@
 #define CLOVER_ENGINE_H
 
 #include <libevdev/libevdev-uinput.h>
+#include <stdio.h>
 #include "table.h"
 #include "bitmap.h"
 #include "silly-string.h"
 
-typedef enum clover_macro {
-    UNKNOWN_COMMAND,
+typedef enum {
+    UNKNOWN_MACRO,
     RETRO_INSERT_SPACE,
     RETRO_DELETE_SPACE,
     UNDO,
     REPEAT_LAST_STROKE,
     RETRO_TOGGLE_ASTERISK,
-};
+} clover_macro;
 
-typedef enum clover_command {
+typedef enum {
     UNKNOWN_COMMAND,
     SUSPEND,
     RESUME,
@@ -27,7 +28,7 @@ typedef enum clover_command {
     FOCUS,
     QUIT,
     SET_CONFIG, // takes args
-};
+} clover_command;
 
 typedef struct clover__instructionT clover_instruction;
 // i don't think deletedText will work correctly with unicode

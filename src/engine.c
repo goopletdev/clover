@@ -3,40 +3,73 @@
 silly_string* clover_ss_macros;
 silly_string* clover_ss_commands;
 
+#define set_enum_val(x) [x] = x
+clover_macro clover_macro_values[] = {
+    set_enum_val(UNKNOWN_MACRO),
+    set_enum_val(RETRO_INSERT_SPACE),
+    set_enum_val(RETRO_DELETE_SPACE),
+    set_enum_val(UNDO),
+    set_enum_val(REPEAT_LAST_STROKE),
+    set_enum_val(RETRO_TOGGLE_ASTERISK),
+};
+clover_command clover_command_values[] = {
+    set_enum_val(UNKNOWN_COMMAND),
+    set_enum_val(SUSPEND),
+    set_enum_val(RESUME),
+    set_enum_val(TOGGLE),
+    set_enum_val(ADD_TRANSLATION),
+    set_enum_val(LOOKUP),
+    set_enum_val(SUGGESTIONS),
+    set_enum_val(CONFIGURE),
+    set_enum_val(FOCUS),
+    set_enum_val(QUIT),
+    set_enum_val(SET_CONFIG),
+};
+
 void clover_init_engine(void) {
     clover_ss_macros = silly_init();
-    silly_insert_ci(clover_ss_macros, "undo", UNDO);
-    silly_insert_ci(clover_ss_macros, "repeat_last_stroke", REPEAT_LAST_STROKE);
-    silly_insert_ci(clover_ss_macros, "retro_toggle_asterisk", RETRO_TOGGLE_ASTERISK);
-    silly_insert_ci(clover_ss_macros, "retrospective_toggle_asterisk", RETRO_TOGGLE_ASTERISK);
-    silly_insert_ci(clover_ss_macros, "retro_insert_space", RETRO_INSERT_SPACE);
-    silly_insert_ci(clover_ss_macros, "retrospective_insert_space", RETRO_INSERT_SPACE);
-    silly_insert_ci(clover_ss_macros, "retro_delete_space", RETRO_DELETE_SPACE);
-    silly_insert_ci(clover_ss_macros, "retrospective_delete_space", RETRO_DELETE_SPACE);
+    silly_insert_ci(clover_ss_macros, "undo", &clover_macro_values[UNDO]);
+    silly_insert_ci(clover_ss_macros, "repeat_last_stroke", &clover_macro_values[REPEAT_LAST_STROKE]);
+    silly_insert_ci(clover_ss_macros, "retro_toggle_asterisk", &clover_macro_values[RETRO_TOGGLE_ASTERISK]);
+    silly_insert_ci(clover_ss_macros, "retrospective_toggle_asterisk", &clover_macro_values[RETRO_TOGGLE_ASTERISK]);
+    silly_insert_ci(clover_ss_macros, "retro_insert_space", &clover_macro_values[RETRO_INSERT_SPACE]);
+    silly_insert_ci(clover_ss_macros, "retrospective_insert_space", &clover_macro_values[RETRO_INSERT_SPACE]);
+    silly_insert_ci(clover_ss_macros, "retro_delete_space", &clover_macro_values[RETRO_DELETE_SPACE]);
+    silly_insert_ci(clover_ss_macros, "retrospective_delete_space", &clover_macro_values[RETRO_DELETE_SPACE]);
 
     clover_ss_commands = silly_init();
-    silly_insert_ci(clover_ss_commands, "suspend", SUSPEND);
-    silly_insert_ci(clover_ss_commands, "suggestions", SUGGESTIONS);
-    silly_insert_ci(clover_ss_commands, "set_config", SET_CONFIG);
-    silly_insert_ci(clover_ss_commands, "resume", RESUME);
-    silly_insert_ci(clover_ss_commands, "toggle", TOGGLE);
-    silly_insert_ci(clover_ss_commands, "add_translation", ADD_TRANSLATION);
-    silly_insert_ci(clover_ss_commands, "lookup", LOOKUP);
-    silly_insert_ci(clover_ss_commands, "configure", CONFIGURE);
-    silly_insert_ci(clover_ss_commands, "focus", FOCUS);
-    silly_insert_ci(clover_ss_commands, "quit", QUIT);
+    silly_insert_ci(clover_ss_commands, "suspend", &clover_command_values[SUSPEND]);
+    silly_insert_ci(clover_ss_commands, "suggestions", &clover_command_values[SUGGESTIONS]);
+    silly_insert_ci(clover_ss_commands, "set_config", &clover_command_values[SET_CONFIG]);
+    silly_insert_ci(clover_ss_commands, "resume", &clover_command_values[RESUME]);
+    silly_insert_ci(clover_ss_commands, "toggle", &clover_command_values[TOGGLE]);
+    silly_insert_ci(clover_ss_commands, "add_translation", &clover_command_values[ADD_TRANSLATION]);
+    silly_insert_ci(clover_ss_commands, "lookup", &clover_command_values[LOOKUP]);
+    silly_insert_ci(clover_ss_commands, "configure", &clover_command_values[CONFIGURE]);
+    silly_insert_ci(clover_ss_commands, "focus", &clover_command_values[FOCUS]);
+    silly_insert_ci(clover_ss_commands, "quit", &clover_command_values[QUIT]);
 }
 
 void clover_free_instruction(clover_instruction* i) {
     switch (i->type) {
+        case (NONE):
+        case (COMMAND):
+        case (MACRO):
+        case (MOVEMENT):
+            // nothing to free;
+            break;
         case (ASCII): 
             free(i->u.inputText);
+            break;
         case (UNICODE):
             free(i->u.unicode);
+            break;
         case (META):
             free(i->u.meta);
+            break;
         case (DELETE):
             free(i->u.deletedText);
+            break;
     }
     free(i->args);
     free(i);
@@ -91,7 +124,11 @@ clover_command clover_look_up_command(char* translation) {
     return silly_get_ci(clover_ss_commands, translation) || UNKNOWN_COMMAND;
 }
 
-void clover_instruction_from_bracket_contents(clover_instruction* ci, char* bracket_contents) {
+void clover_instruction_from_bracket_contents(
+        clover_instance* instance, // for deletion or changing settings
+        clover_instruction* ci, 
+        char* bracket_contents) 
+{
     char buffer[1024] = { '\0' };
     int buffer_len = 0;
     char c = bracket_contents[0];
@@ -99,7 +136,7 @@ void clover_instruction_from_bracket_contents(clover_instruction* ci, char* brac
     char* getc = bracket_contents + 1;
     switch (c) {
         case ':':
-            while (c = *(getc++)) {
+            while ((c = *(getc++))) {
                 if (c == ':') {
                     has_args = 1;
                     break;
@@ -121,7 +158,7 @@ void clover_instruction_from_bracket_contents(clover_instruction* ci, char* brac
             }
             ci->type = COMMAND;
             getc = bracket_contents + 6;
-            while (c = *(getc++)) {
+            while ((c = *(getc++))) {
                 if (c == ':') {
                     has_args = 1;
                     break;
@@ -133,18 +170,39 @@ void clover_instruction_from_bracket_contents(clover_instruction* ci, char* brac
             buffer_len = 0;
             break;
         default:
-            label default_error:
+            default_error:
             printf("Dictionary error: unrecognized command [%s]\n", bracket_contents);
             exit(1);
     }
     if (has_args) {
-        while (c = *(getc++)) {
+        while ((c = *(getc++))) {
             buffer[buffer_len++] = c;
         }
         ci->args = (char*)malloc(buffer_len * sizeof(char));
         strcpy(ci->args, buffer);
         memset(buffer, 0, buffer_len);
         buffer_len = 0;
+    }
+    clover_history* new = (clover_history*)malloc(sizeof(clover_history));
+    new->translation.instructions = ci;
+    clover_instance_push_history(instance, new);
+}
+
+void clover_handle_macro(clover_instance* instance, clover_instruction* instruction) {
+    switch (instruction->u.macro) {
+        case UNKNOWN_MACRO:
+            return;
+        case RETRO_INSERT_SPACE:
+        case RETRO_DELETE_SPACE:
+        case REPEAT_LAST_STROKE:
+        case RETRO_TOGGLE_ASTERISK:
+            // implement later;
+            break;
+        case UNDO:
+            instance->history.tail = instance->history.tail->prev;
+            clover_free_history(instance->history.tail->next);
+            // TODO: implement actual deletion
+            break;
     }
 }
 
@@ -158,9 +216,10 @@ clover_instruction* clover_instruction_from_dict(clover_instance* ci, clover_dic
         return instruction;
     }
  
-    if (dict->translations.entries[0][i] == '=') {
+    if (dict->translations.entries[0][0] == '=') {
         instruction->type = MACRO;
-        instruction->u.macro = clover_macro_from_translation(&dict->translation.entries[0][1]);
+        instruction->u.macro = clover_macro_from_translation(&dict->translations.entries[0][1]);
+        clover_handle_macro(ci, instruction);
         return instruction;
     }
 
@@ -168,7 +227,7 @@ clover_instruction* clover_instruction_from_dict(clover_instance* ci, clover_dic
     int buffer_len = 0;
     char buffer[1024] = { '\0' };
     char c;
-    for (int i = 0; (c = dict->translations.entries[i]) != '\0'; i++) {
+    for (int i = 0; (c = dict->translations.entries[0][i]) != '\0'; i++) {
         if (is_escaped) {
             is_escaped = 0;
             buffer[buffer_len++] = parse_escaped_char(c);
@@ -183,7 +242,8 @@ clover_instruction* clover_instruction_from_dict(clover_instance* ci, clover_dic
             } 
         } else if (c == '}') {
             // set instruction type
-            handle_bracket_contents(instruction, buffer);
+            instruction->type = COMMAND;
+            clover_instruction_from_bracket_contents(ci, instruction, buffer);
             memset(buffer, '\0', buffer_len);
             buffer_len = 0;
         } else {
