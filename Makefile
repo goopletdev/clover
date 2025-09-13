@@ -132,7 +132,7 @@ test-build: $(TEST_BINARIES)
 test: test-build
 	@echo "Running tests..."
 	@for test in $(TEST_BINARIES); do \
-		echo "\nRunning $$test..."; \
+		echo "Running $$test..."; \
 		$$test || exit 1; \
 	done
 	@echo "All tests passed!"
