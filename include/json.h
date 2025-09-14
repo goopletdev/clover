@@ -7,7 +7,7 @@
 
 #include "chord.h" // clover_chord type
                     // clover_parse_compound_chord, 
-#include "table.h" // clover_push_entry, 
+#include "dict.h" // clover_push_entry, 
                   // clover_dict type
 
 #define CHAR_BUFFER_SIZE 256

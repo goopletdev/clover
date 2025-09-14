@@ -3,7 +3,7 @@
 
 #include <libevdev/libevdev-uinput.h>
 #include <stdio.h>
-#include "table.h"
+#include "dict.h"
 #include "bitmap.h"
 #include "silly-string.h"
 

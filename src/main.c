@@ -2,7 +2,7 @@
 #include "chord.h"
 #include "event-listener.h"
 #include "event-emulator.h"
-#include "table.h"
+#include "dict.h"
 #include "json.h"
 
 #include <fcntl.h>

@@ -1,4 +1,4 @@
-#include "table.h"
+#include "dict.h"
 
 void clover_free_dict(clover_dict* d) {
     for (int i = 0; i < d->children.capacity; i++) {
