@@ -48,4 +48,14 @@ clover_history_element* clover_history_pop(clover_history* history);
  */
 clover_history_element* clover_history_shift(clover_history* history);
 
+/**
+ * Frees a malloc'd clover_history_element
+ */
+void clover_history_free_element(clover_history_element* el);
+
+/**
+ * free all elements in clover_history
+ */
+void clover_history_free(clover_history* history);
+
 #endif // CLOVER_HISTORY_H
