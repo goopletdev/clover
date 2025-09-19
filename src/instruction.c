@@ -32,7 +32,7 @@ void clover_instruction_start(void) {
     silly_macro(UNDO);
     silly_macro(REPEAT_LAST_STROKE);
     silly_macro(RETRO_TOGGLE_ASTERISK);
-    silly_macro(RETROSPECTIVE_TOGGLE_ASTERISK);
+    silly_insert_ci(clover_macros_trie, "retrospective_toggle_asterisk", &clover_macro_values[RETRO_TOGGLE_ASTERISK]);
     silly_macro(RETRO_INSERT_SPACE);
     silly_insert_ci(clover_macros_trie, "retrospective_insert_space", &clover_macro_values[RETRO_INSERT_SPACE]);
     silly_macro(RETRO_DELETE_SPACE);
