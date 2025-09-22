@@ -1,6 +1,8 @@
 #ifndef CLOVER_INSTRUCTION_H
 #define CLOVER_INSTRUCTION_H
 
+#include "chord.h"
+#include "dict.h"
 #include "silly-string.h"
 
 typedef enum {

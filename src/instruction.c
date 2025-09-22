@@ -151,7 +151,7 @@ clover_instruction* clover_instruction_from_brackets(
         case ',':
         case '?':
         case '!':
-        case ':':
+        // case ':':
         colon_punctuation:
         case ';':
         case '=':
@@ -209,7 +209,7 @@ clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord
         return root;
     }
 
-    if (dict->translation.entries[0][0] == '=') {
+    if (dict->translations.entries[0][0] == '=') {
         root = clover_instruction_from_macro(dict->translations.entries[0] + 1);
         root->next = NULL;
         root->prev = NULL;
@@ -238,7 +238,7 @@ clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord
             }
         } else if (c == '}') {
             inst->type = COMMAND;
-            clover_instruction_from_brackets(inst, buffer);
+            clover_instruction_from_brackets(buffer);
             memset(buffer, '\0', buffer_len);
             buffer_len = 0;
         } else {

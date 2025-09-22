@@ -1,5 +1,5 @@
-#ifndef CLOVER_TABLE_H
-#define CLOVER_TABLE_H
+#ifndef CLOVER_DICT_H
+#define CLOVER_DICT_H
 
 #include <stdlib.h> // malloc, calloc, realloc
 #include <string.h> // uses strlen, strcpy
@@ -63,4 +63,4 @@ clover_dict* clover_dict_push_entry(
  */
 clover_dict* clover_seek(clover_dict* d, clover_chord* id, int id_len);
 
-#endif // CLOVER_TABLE_H
+#endif // CLOVER_DICT_H

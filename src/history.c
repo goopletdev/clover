@@ -3,7 +3,7 @@
 clover_history* clover_history_init(void) {
     clover_history* cl_hist = (clover_history*)
         malloc(sizeof(clover_history));
-    cl_hist->current_len = 0;
+    cl_hist->len = 0;
     cl_hist->head = NULL;
     cl_hist->tail = NULL;
     return cl_hist;
@@ -24,14 +24,14 @@ void clover_history_push(
     element->prev = history->tail;
     history->tail->next = element;
     history->tail = element;
-    history->current_len++;
+    history->len++;
 }
 
 clover_history_element* clover_history_pop(clover_history* history) {
     clover_history_element* el = history->tail;
     history->tail = el->prev;
     el->prev = NULL;
-    history->current_len--;
+    history->len--;
     return el;
 }
 
@@ -39,7 +39,7 @@ clover_history_element* clover_history_shift(clover_history* history) {
     clover_history_element* el = history->head;
     history->head = el->next;
     el->next = NULL;
-    history->current_len--;
+    history->len--;
     return el;
 }
 

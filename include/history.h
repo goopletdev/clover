@@ -19,13 +19,13 @@ struct clover__history_elementT {
 
 typedef struct clover__historyT clover_history;
 struct clover__historyT {
-    int current_len;
+    int len;
     clover_history_element* head;
     clover_history_element* tail;
 };
 
 /**
- * Malloc a clover_history element w/ each field initialized to 0 or NULL
+ * Malloc a clover_history doubly linked list w/ each field initialized to 0 or NULL
  */
 clover_history* clover_history_init(void);
 
@@ -55,7 +55,7 @@ clover_history_element* clover_history_shift(clover_history* history);
 void clover_history_free_element(clover_history_element* el);
 
 /**
- * free all elements in clover_history
+ * free all elements in clover_history, and the malloc'd history list itself
  */
 void clover_history_free(clover_history* history);
 
