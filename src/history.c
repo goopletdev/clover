@@ -21,15 +21,22 @@ clover_history_element* clover_history_element_init(void) {
 
 void clover_history_push(
         clover_history* history, clover_history_element* element) {
-    element->prev = history->tail;
-    history->tail->next = element;
-    history->tail = element;
-    history->len++;
+    if (history->len++ == 0) {
+        history->tail = element;
+        history->head = element;
+    } else {
+        element->prev = history->tail;
+        history->tail->next = element;
+        history->tail = element;
+    }
 }
 
 clover_history_element* clover_history_pop(clover_history* history) {
     clover_history_element* el = history->tail;
     history->tail = el->prev;
+    if (history->tail) {
+        history->tail->next = NULL;
+    }
     el->prev = NULL;
     history->len--;
     return el;
@@ -38,13 +45,18 @@ clover_history_element* clover_history_pop(clover_history* history) {
 clover_history_element* clover_history_shift(clover_history* history) {
     clover_history_element* el = history->head;
     history->head = el->next;
+    if (history->head) {
+        history->head->prev = NULL;
+    }
     el->next = NULL;
     history->len--;
     return el;
 }
 
 void clover_history_free_element(clover_history_element* el) {
-    free(el->instruction);
+    if (el) {
+        free(el->instruction);
+    }
     free(el);
 }
 

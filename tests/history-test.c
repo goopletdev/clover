@@ -35,6 +35,7 @@ void clvrHistoryPush_shouldUpdateElements_prevAndNext(void) {
     clover_history_push(hist, e1);
     clover_history_push(hist, e2);
     clover_history_push(hist, e3);
+
     clover_history_push(hist, e4);
     TEST_ASSERT_EQUAL(hist->head, e1);
     TEST_ASSERT_EQUAL(hist->tail, e4);
