@@ -28,7 +28,8 @@ const clover_command clover_command_values[] = {
 
 void clover_instruction_start(void) {
     clover_macros_trie = silly_init();
-#define silly_macro(x) silly_insert_ci(clover_macros_trie, #x, &clover_macro_values[x])
+    clover_commands_trie = silly_init();
+    #define silly_macro(x) silly_insert_ci(clover_macros_trie, #x, &clover_macro_values[x])
     silly_macro(UNDO);
     silly_macro(REPEAT_LAST_STROKE);
     silly_macro(RETRO_TOGGLE_ASTERISK);
@@ -37,7 +38,7 @@ void clover_instruction_start(void) {
     silly_insert_ci(clover_macros_trie, "retrospective_insert_space", &clover_macro_values[RETRO_INSERT_SPACE]);
     silly_macro(RETRO_DELETE_SPACE);
     silly_insert_ci(clover_macros_trie, "retrospective_delete_space", &clover_macro_values[RETRO_DELETE_SPACE]);
-#define silly_command(x) silly_insert_ci(clover_commands_trie, #x, &clover_command_values[x])
+    #define silly_command(x) silly_insert_ci(clover_commands_trie, #x, &clover_command_values[x])
     silly_command(UNKNOWN_COMMAND);
     silly_command(SUSPEND);
     silly_command(RESUME);
@@ -49,6 +50,11 @@ void clover_instruction_start(void) {
     silly_command(FOCUS);
     silly_command(QUIT);
     silly_command(SET_CONFIG);
+}
+
+void clover_instruction_cleanup(void) {
+    silly_free(clover_macros_trie);
+    silly_free(clover_commands_trie);
 }
 
 void clover_instruction_free(clover_instruction* inst) {
@@ -95,12 +101,12 @@ char clover_instruction__parse_escaped_char(char c) {
 }
 
 clover_macro clover_instruction_lookup_macro(char* translation) {
-    clover_macro* m = silly_get_ci(clover_macros_trie, translation);
+    const clover_macro* m = silly_get_ci(clover_macros_trie, translation);
     return m ? *m : UNKNOWN_MACRO; 
 }
 
 clover_command clover_instruction_lookup_command(char* translation) {
-    clover_command* c = silly_get_ci(clover_commands_trie, translation);
+    const clover_command* c = silly_get_ci(clover_commands_trie, translation);
     return c ? *c : UNKNOWN_COMMAND;
 }
 
@@ -111,7 +117,7 @@ clover_instruction* clover_instruction_from_brackets(
     int buffer_len = 0;
     char c = bracket_contents[0];
     int has_args = 0;
-    char* getc = bracket_contents + 1;
+    const char* getc = bracket_contents + 1;
     clover_instruction* ci = (clover_instruction*)malloc(sizeof(clover_instruction));
     switch (c) {
         case ':':
@@ -160,7 +166,6 @@ clover_instruction* clover_instruction_from_brackets(
             // implement all of these later
             break;
         default: 
-        default_error:
             printf("Dictionary error: unrecognized command [%s]\n", bracket_contents);
             exit(1);
     }
@@ -169,6 +174,7 @@ clover_instruction* clover_instruction_from_brackets(
             buffer[buffer_len++] = c;
         }
         ci->args = (char*)malloc(buffer_len * sizeof(char));
+
         strcpy(ci->args, buffer);
         memset(buffer, 0, buffer_len);
         buffer_len = 0;
@@ -179,10 +185,11 @@ clover_instruction* clover_instruction_from_brackets(
 clover_instruction* clover_instruction_from_macro(
         const char* macro_contents)
 {
+    // macros start with '='. this function takes everything following '='
     char buffer[1023] = { '\0' };
     int buffer_len = 0;
     char c;
-    char* getc = macro_contents;
+    const char* getc = macro_contents;
     clover_instruction* ci = (clover_instruction*)malloc(sizeof(clover_instruction));
     ci->type = MACRO;
     while ((c = *(getc++)) && c != ':') {
@@ -199,7 +206,7 @@ clover_instruction* clover_instruction_from_macro(
 
 clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord chord) {
     clover_instruction* inst;
-    clover_instruction* root;
+    clover_instruction* root = NULL;
     if (!dict || !dict->translations.entries) {
         root = (clover_instruction*)malloc(sizeof(clover_instruction));
         root->type = ASCII;

@@ -55,4 +55,13 @@ void clover_instruction_start(void);
 
 void clover_instruction_free(clover_instruction* inst);
 
+void clover_instruction_cleanup(void);
+
+clover_macro clover_instruction_lookup_macro(char* translation);
+
+clover_command clover_instruction_lookup_command(char* translation);
+
+clover_instruction* clover_instruction_from_brackets(
+        const char* bracket_contents);
+
 #endif // CLOVER_INSTRUCTION_H
