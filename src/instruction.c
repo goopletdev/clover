@@ -80,7 +80,8 @@ void clover_instruction_free(clover_instruction* inst) {
     free(inst);
 }
 
-char parse_escaped_char(char c) {
+// internal fucntion
+char clover_instruction__parse_escaped_char(char c) {
     switch (c) {
         case ('t'):
             return '\t';
@@ -93,4 +94,156 @@ char parse_escaped_char(char c) {
     }
 }
 
+clover_macro clover_instruction_lookup_macro(char* translation) {
+    clover_macro* m = silly_get_ci(clover_macros_trie, translation);
+    return m ? *m : UNKNOWN_MACRO; 
+}
 
+clover_command clover_instruction_lookup_command(char* translation) {
+    clover_command* c = silly_get_ci(clover_commands_trie, translation);
+    return c ? *c : UNKNOWN_COMMAND;
+}
+
+clover_instruction* clover_instruction_from_brackets(
+        const char* bracket_contents)
+{
+    char buffer[1024] = { '\0' };
+    int buffer_len = 0;
+    char c = bracket_contents[0];
+    int has_args = 0;
+    char* getc = bracket_contents + 1;
+    clover_instruction* ci = (clover_instruction*)malloc(sizeof(clover_instruction));
+    switch (c) {
+        case ':':
+            if (*getc == '\0') {
+                goto colon_punctuation;
+            }
+            // instruction type is 'meta'
+            while ((c = *(getc++))) {
+                if (c == ':') {
+                    has_args = 1;
+                    break;
+                }
+                buffer[buffer_len++] = c;
+            }
+            ci->type = META;
+            ci->u.meta = (char*)malloc(sizeof(char) * buffer_len);
+            strcpy(ci->u.meta, buffer);
+            memset(buffer, 0, buffer_len);
+            buffer_len = 0;
+            break;
+        case 'p':
+        case 'P':
+            // instruction type should be 'command'
+            break;
+        case 'm':
+        case 'M':
+            // instruction type should be  'mode'
+            break;
+        case '^':
+        case '&':
+        case '*':
+        case '-':
+        case '>':
+        case '<':
+        case '~':
+        case '.':
+        case ',':
+        case '?':
+        case '!':
+        case ':':
+        colon_punctuation:
+        case ';':
+        case '=':
+        case '#':
+        case '$':
+            // implement all of these later
+            break;
+        default: 
+        default_error:
+            printf("Dictionary error: unrecognized command [%s]\n", bracket_contents);
+            exit(1);
+    }
+    if (has_args) {
+        while ((c = *(getc++))) {
+            buffer[buffer_len++] = c;
+        }
+        ci->args = (char*)malloc(buffer_len * sizeof(char));
+        strcpy(ci->args, buffer);
+        memset(buffer, 0, buffer_len);
+        buffer_len = 0;
+    }
+    return ci;
+}
+
+clover_instruction* clover_instruction_from_macro(
+        const char* macro_contents)
+{
+    char buffer[1023] = { '\0' };
+    int buffer_len = 0;
+    char c;
+    char* getc = macro_contents;
+    clover_instruction* ci = (clover_instruction*)malloc(sizeof(clover_instruction));
+    ci->type = MACRO;
+    while ((c = *(getc++)) && c != ':') {
+        buffer[buffer_len++] = c;
+    }
+    ci->u.macro = clover_instruction_lookup_macro(buffer);
+    if (c) {
+        // has args
+        ci->args = (char*)malloc(strlen(getc) * sizeof(char));
+        strcpy(ci->args, getc);
+    }
+    return ci;
+}
+
+clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord chord) {
+    clover_instruction* inst;
+    clover_instruction* root;
+    if (!dict || !dict->translations.entries) {
+        root = (clover_instruction*)malloc(sizeof(clover_instruction));
+        root->type = ASCII;
+        root->u.inputText = clover_pretty_chord(chord);
+        root->next = NULL;
+        root->prev = NULL;
+        return root;
+    }
+
+    if (dict->translation.entries[0][0] == '=') {
+        root = clover_instruction_from_macro(dict->translations.entries[0] + 1);
+        root->next = NULL;
+        root->prev = NULL;
+        return root;
+    }
+
+    int is_escaped = 0;
+    int buffer_len = 0;
+    char buffer[1024] = { '\0' };
+    char c;
+    char* getc = dict->translations.entries[0];
+    while ((c = *(getc++))) {
+        if (is_escaped) {
+            is_escaped = 0;
+            buffer[buffer_len++] = clover_instruction__parse_escaped_char(c);
+        } else if (c == '\\') {
+            is_escaped = 1;
+        } else if (c == '{') {
+            if (buffer_len) {
+                inst->type = ASCII;
+                inst->u.inputText = (char*)malloc(sizeof(char) * buffer_len);
+                strcpy(inst->u.inputText, buffer);
+                inst->next = (clover_instruction*)malloc(sizeof(clover_instruction));
+                inst = inst->next;
+                memset(buffer, '\0', buffer_len);
+            }
+        } else if (c == '}') {
+            inst->type = COMMAND;
+            clover_instruction_from_brackets(inst, buffer);
+            memset(buffer, '\0', buffer_len);
+            buffer_len = 0;
+        } else {
+            buffer[buffer_len++] = c;
+        }
+    }
+    return root;
+}

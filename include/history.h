@@ -5,6 +5,7 @@
 
 // #include "chord.h"
 #include "dict.h"
+#include "instruction.h"
 
 typedef struct clover__history_elementT clover_history_element;
 struct clover__history_elementT {

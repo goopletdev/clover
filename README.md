@@ -86,6 +86,8 @@ Consider incorporating https://zserge.com/jsmn/ for json parsing
 For steno history, many translations will also result in backspaces. Undoing will therefore also have to keep track of the chars deleted by said backspaces
 
 ### todo:
+- reimplement engine; for now, just make all entries 'inputText' instructions. then add undo, and go from there.
+- write tests for history and instruction methods
 - Document code with Doxygen tags/Javadoc-style doc tags
 - implement steno-order sorted dictionary
 - replace "translations" field with object containing function pointers, raw text, source steno dictionary id
