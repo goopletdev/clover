@@ -58,7 +58,7 @@ make
 ```bash
 make test
 ```
-For further debugging and checking for memory leaks, consider installing Valgrind.
+Clover uses the [Unity](https://github.com/ThrowTheSwitch/Unity) testing library. For further debugging and checking for memory leaks, consider installing Valgrind.
 #### Ubuntu/Debian
 ```bash
 sudo apt install valgrind
