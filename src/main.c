@@ -29,7 +29,87 @@ const int BUFFER_SIZE = 1024;
 char* ESCAPE_CHORD = "PHROLG";
 clover_chord ESCAPE;
 
-void handle_cli_args(int argc, char **argv) {
+// variable declaration
+clover_dict* d;
+int kbd_fd, uinput_fd, grab = 1;
+struct libevdev* kbd_dev;
+struct libevdev_uinput* virtkbd_dev;
+
+void clover__cleanup(void) {
+    close(kbd_fd);
+    close(uinput_fd);
+    clover_free_dict(d);
+}
+
+void clover__parse_config(void) {
+    /**********************************
+     * OPEN CONFIG
+     *********************************/
+    toml_result_t result = toml_parse_file_ex("config.toml");
+    if (!result.ok) {
+        printf("config.toml missing or broken. Trying default-config.toml\n");
+        result = toml_parse_file_ex("default-config.toml");
+    }
+    if (!result.ok) {
+        printf("Could not parse .toml\n");
+        exit(1);
+    }
+    /**********************************
+     * STENO DICTIONARY PARSING
+     *********************************/
+    // get dictionaries path
+    toml_datum_t dict_path = toml_seek(result.toptab, "dictionary.path");
+    if (dict_path.type != TOML_STRING) {
+        printf("missing or broken 'dictionary.path' property in config\n");
+        exit(1);
+    }
+    // get array of dict paths relative to dict directory
+    toml_datum_t dict_array = toml_seek(result.toptab, "dictionary.dictionaries");
+    if (dict_array.type != TOML_ARRAY) {
+        printf("missing or broken dictionary.dictionaries prop in config\n");
+        exit(1);
+    }
+    // parse each dictionary into single dict object
+    d = clover_table_init_dict(0, NULL);
+    char buffer[BUFFER_SIZE];
+    for (int i = 0; i < dict_array.u.arr.size; i++) {
+        toml_datum_t elem = dict_array.u.arr.elem[i];
+        if (elem.type != TOML_STRING) {
+            printf("dictionary.dictionaries element is not a string\n");
+            exit(1);
+        }
+        memset(buffer, 0, BUFFER_SIZE);
+        strcpy(buffer, dict_path.u.str.ptr);
+        strcat(buffer, elem.u.str.ptr);
+        d = clover_parse_dictionary(buffer, d);
+    }
+    printf("Done parsing steno dicts. Root dict size: %i\n", d->children.size);
+    /**********************************
+     * KEYBOARD EVENTS
+     *********************************/
+    toml_datum_t event_path_toml = toml_seek(result.toptab, "keyboard.path");
+    if (event_path_toml.type != TOML_STRING) {
+        printf("missing or invalid 'keyboard.path' property in config\n");
+        exit(1);
+    }
+    if ((kbd_fd = open(event_path_toml.u.str.ptr, O_RDONLY)) == -1) {
+        printf("Error opening event %s\n", event_path_toml.u.str.ptr);
+        exit(1);
+    }
+    if ((uinput_fd = open("/dev/uinput", O_RDWR)) == -1) {
+        printf("Error opening /dev/uinput\n");
+    }
+    libevdev_new_from_fd(kbd_fd, &kbd_dev);
+    libevdev_uinput_create_from_device(kbd_dev, uinput_fd, &virtkbd_dev);
+    ioctl(kbd_fd, EVIOCGRAB, &grab);
+    /**********************************
+     * CLEANUP
+     *********************************/
+    toml_free(result);
+    return;
+}
+
+void clover__handle_cli_args(int argc, char **argv) {
     if (argc == 1) {
         printf("Running %s with no args...\n", argv[0]);
     } else {
@@ -96,105 +176,26 @@ void clover__event_loop(int fd, struct libevdev_uinput* uinput_dev, clover_dict*
 }
 
 int main(int argc, char** argv) {
-    /******************************************************
+    /**********************************
+     * EXIT FUNCTION
+     *********************************/
+    atexit(clover__cleanup);
+
+    /**********************************
      * ARGS
-     *****************************************************/
+     *********************************/
     // placeholder to avoid compiler warnings until later implementation
-    handle_cli_args(argc, argv);
+    clover__handle_cli_args(argc, argv);
 
-    /******************************************************
+    /**********************************
      * CONFIG PARSING
-     *****************************************************/
-    toml_result_t result = toml_parse_file_ex("config.toml");
-    if (!result.ok) {
-        // try loading default config file
-        result = toml_parse_file_ex("default-config.toml");
-    }
-    if (!result.ok) {
-        printf("Could not parse .toml\n");
-        exit(1);
-    }
+     *********************************/
+    clover__parse_config();
 
-    /******************************************************
-     * DICTIONARY PARSING
-     *****************************************************/
-    // get dictionary path
-    toml_datum_t dict_path = toml_seek(result.toptab, "dictionary.path");
-    if (dict_path.type != TOML_STRING) {
-        printf("missing or invalid 'dictionary.path' property in config\n");
-        exit(1);
-    }
-
-    // get array of dictionary paths
-    toml_datum_t dict_array = toml_seek(result.toptab, "dictionary.dictionaries");
-    if (dict_array.type != TOML_ARRAY) {
-        printf("missing or invalid 'dictionary.dictionaries' property in config\n");
-        exit(1);
-    }
-
-    // initialize clover dictionary
-    clover_dict* d = clover_table_init_dict(0, NULL);
-
-    // parse each dictionary into single dictionary object
-    for (int i = 0; i < dict_array.u.arr.size; i++) {
-        toml_datum_t elem = dict_array.u.arr.elem[i];
-        if (elem.type != TOML_STRING) {
-            printf("dictionary.dictionaries element is not a string\n");
-            exit(1);
-        }
-        char buffer[BUFFER_SIZE];
-        memset(buffer, 0, BUFFER_SIZE);
-        strcpy(buffer, dict_path.u.str.ptr);
-        strcat(buffer, elem.u.str.ptr);
-        d = clover_parse_dictionary(buffer, d);
-    }
-    printf("Finished parsing dictionary. Root dictionary size: %i\n", d->children.size);
-
-    /******************************************************
-     * KEYBOARD EVENT
-     *****************************************************/
-    // get event path
-    toml_datum_t event_path_toml = toml_seek(result.toptab, "keyboard.path");
-    if (event_path_toml.type != TOML_STRING) {
-        printf("missing or invalid 'keyboard.path' property in config\n");
-        exit(1);
-    }
-    // get file descriptor
-    int kbd_fd = open(event_path_toml.u.str.ptr, O_RDONLY);
-    if (kbd_fd == -1) {
-        printf("Error opening event %s\n", event_path_toml.u.str.ptr);
-        exit(1);
-    }
-
-    struct libevdev *kbd_dev;
-    libevdev_new_from_fd(kbd_fd, &kbd_dev);
-
-    struct libevdev_uinput* virtkbd_dev;
-    int uinput_fd = open("/dev/uinput", O_RDWR);
-    libevdev_uinput_create_from_device(kbd_dev, uinput_fd, &virtkbd_dev);
-
-    int grab = 1;
-    ioctl(kbd_fd, EVIOCGRAB, &grab);
-
-    // clover_keyboard keyboard_state;
-    // int ioctlVal = ioctl(kbd_fd, EVIOCGKEY(sizeof(keyboard_state.state)), keyboard_state.state);
-
-    /******************************************************
-     * TOML CLEANUP
-     *****************************************************/
-    toml_free(result);
-
-    /******************************************************
+    /**********************************
      * MAIN LOOP
-     *****************************************************/
+     *********************************/
     clover__event_loop(kbd_fd, virtkbd_dev, d);
-
-    /******************************************************
-     * CLEANUP
-     *****************************************************/
-    close(kbd_fd);
-    close(uinput_fd);
-    clover_free_dict(d);
 
     return 0;
 }

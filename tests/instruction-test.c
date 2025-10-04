@@ -2,11 +2,11 @@
 #include "unity.h"
 
 void setUp(void) {
-
+    clover_instruction_start();
 }
 
 void tearDown(void) {
-
+    clover_instruction_cleanup();
 }
 
 void clvrInstruction_testLookupMacroOrCommand(void) {
@@ -20,10 +20,13 @@ void clvrInstruction_testLookupMacroOrCommand(void) {
     TEST_ASSERT_EQUAL(RETRO_TOGGLE_ASTERISK, clover_instruction_lookup_macro("retrospective_toggle_asterisk"));
 }
 
+void clvrInstruction_fromBrackets_shouldSetType(void) {
+
+}
+
 int main(void) {
-    clover_instruction_start();
     UNITY_BEGIN();
     RUN_TEST(clvrInstruction_testLookupMacroOrCommand);
-    clover_instruction_cleanup();
+    RUN_TEST(clvrInstruction_fromBrackets_shouldSetType);
     return UNITY_END();
 }

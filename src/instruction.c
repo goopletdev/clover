@@ -4,7 +4,7 @@ silly_string* clover_macros_trie;
 silly_string* clover_commands_trie;
 
 #define set_i(i) [i] = i
-const clover_macro clover_macro_values[] = {
+clover_macro clover_macro_values[] = {
     set_i(UNKNOWN_MACRO),
     set_i(RETRO_INSERT_SPACE),
     set_i(RETRO_DELETE_SPACE),
@@ -12,7 +12,7 @@ const clover_macro clover_macro_values[] = {
     set_i(REPEAT_LAST_STROKE),
     set_i(RETRO_TOGGLE_ASTERISK),
 };
-const clover_command clover_command_values[] = {
+clover_command clover_command_values[] = {
     set_i(UNKNOWN_COMMAND),
     set_i(SUSPEND),
     set_i(RESUME),
