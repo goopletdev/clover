@@ -31,14 +31,18 @@ clover_chord ESCAPE;
 
 // variable declaration
 clover_dict* d;
-int kbd_fd, uinput_fd, grab = 1;
+clover_history* hist;
+int kbd_fd, uinput_fd, grab = 1, arpeggiate = 1;
 struct libevdev* kbd_dev;
 struct libevdev_uinput* virtkbd_dev;
 
 void clover__cleanup(void) {
+    printf("cleaning up...\n");
     close(kbd_fd);
     close(uinput_fd);
     clover_free_dict(d);
+    clover_history_free(hist);
+    printf("DONE\n");
 }
 
 void clover__parse_config(void) {
@@ -102,6 +106,22 @@ void clover__parse_config(void) {
     libevdev_new_from_fd(kbd_fd, &kbd_dev);
     libevdev_uinput_create_from_device(kbd_dev, uinput_fd, &virtkbd_dev);
     ioctl(kbd_fd, EVIOCGRAB, &grab);
+    /**********************************
+     * OTHER STUFF
+     *********************************/
+    toml_datum_t arpeggiate_toml = toml_seek(result.toptab, "machine.arpeggiate");
+    if (arpeggiate_toml.type != TOML_BOOLEAN) {
+        if (arpeggiate_toml.type == TOML_UNKNOWN) {
+            printf("arpeggiate value not found. setting to default\n");
+            arpeggiate = 1;
+        } else {
+            printf("unsupported arpeggiate type in config\n");
+            exit(1);
+        }
+    } else if (!arpeggiate_toml.u.boolean) {
+        printf("Currently, only arpeggiate mode is supported. Ignoring config value\n");
+        arpeggiate = 1;
+    }
     /**********************************
      * CLEANUP
      *********************************/
@@ -191,6 +211,12 @@ int main(int argc, char** argv) {
      * CONFIG PARSING
      *********************************/
     clover__parse_config();
+
+    /**********************************
+     * INITIALIZE HISTORY AND STUFF
+     *********************************/
+    hist = clover_history_init();
+    clover_instruction_start();
 
     /**********************************
      * MAIN LOOP

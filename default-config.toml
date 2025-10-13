@@ -12,3 +12,6 @@ dictionaries = [
 
 [keyboard]
 path = "/dev/input/event12"
+
+[machine]
+arpeggiate = true
