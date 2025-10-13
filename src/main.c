@@ -1,8 +1,10 @@
 #include "bitmap.h"
 #include "chord.h"
+#include "dict.h"
 #include "event-listener.h"
 #include "event-emulator.h"
-#include "dict.h"
+#include "history.h"
+#include "instruction.h"
 #include "json.h"
 
 #include <fcntl.h>
@@ -130,6 +132,7 @@ void clover__parse_config(void) {
 }
 
 void clover__handle_cli_args(int argc, char **argv) {
+    printf(COL_CYAN);
     if (argc == 1) {
         printf("Running %s with no args...\n", argv[0]);
     } else {
@@ -138,12 +141,14 @@ void clover__handle_cli_args(int argc, char **argv) {
             printf("Arg %i: %s\n", i, argv[i]);
         }
     }
+    printf(COL_RESET);
     // ESCAPE sequence until commands are implemented
     ESCAPE = clover_parse_chord(ESCAPE_CHORD);
     printf("To close Clover: interrupt or chord \"%s\" on captive device.\n", ESCAPE_CHORD);
 }
 
 void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, clover_dict* dict) {
+    // initialize new history element and instructions
     putchar('\r');
     clover_put_tape(chord);
     printf(" | ");
@@ -168,15 +173,63 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
         }
     }
 
-    if (chord == ESCAPE) {
-        // temporary escape check until commands are implemented
-        printf("\rEscape sequence {PLOVER:TOGGLE}\n");
+    clover_history_element* el = clover_history_element_init();
+    el->instruction = clover_instruction_from_dict(entry, chord);
+    if (el->instruction->type == MACRO && el->instruction->u.macro == UNDO) {
+        clover_history_element* last = clover_history_pop(hist);
+        if (!last) {
+            printf("%sno undoable actions%s\n", COL_MAGENTA, COL_RESET);
+            return;
+        }
+        clover_instruction* inst = last->instruction;
+        // seek last instruction
+        while (inst->next) { inst = inst->next; }
+        while (inst) {
+            if (inst->type == DELETE) {
+                send_string(uinput_dev, inst->u.deletedText);
+            } else if (inst->type == ASCII) {
+                char deletion_buffer[1024] = { '\b' };
+                deletion_buffer[strlen(inst->u.inputText)] = '\0';
+                send_string(uinput_dev, deletion_buffer);
+            } else {
+                printf("%sunsupported or as of yet unimplemented event type%s\n", COL_MAGENTA, COL_RESET);
+            }
+            inst = inst->prev;
+        }
+        clover_history_free_element(last);
+        clover_history_free_element(el);
         free(translation);
-        exit(0);
     } else {
-        send_string(uinput_dev, translation);
-        send_string(uinput_dev, " ");
-        free(translation);
+        clover_history_push(hist, el);
+        if (chord == ESCAPE) {
+            // temporary escape check until commands are implemented
+            printf("\r%sEscape sequence {PLOVER:TOGGLE}%s\n", COL_MAGENTA, COL_RESET);
+            free(translation);
+            exit(0);
+        } else {
+            clover_instruction* inst  = el->instruction;
+            while (inst) {
+                switch (inst->type) {
+                    case ASCII:
+                        send_string(uinput_dev, inst->u.inputText);
+                        break;
+                    case DELETE:
+                    case UNICODE:
+                    case COMMAND:
+                    case MACRO:
+                    case META:
+                    case MOVEMENT:
+                        printf("%sunimplemented instruction type%s\n", COL_MAGENTA, COL_RESET);
+                        // implement later
+                        break;
+                    default:
+                        printf("%sunrecognized instruction type%s\n", COL_MAGENTA, COL_RESET);
+                        exit(1);
+                }
+                inst = inst->next;
+            }
+            free(translation);
+        }
     }
 }
 

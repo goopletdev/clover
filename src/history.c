@@ -33,6 +33,9 @@ void clover_history_push(
 
 clover_history_element* clover_history_pop(clover_history* history) {
     clover_history_element* el = history->tail;
+    if (!el) {
+        return NULL;
+    }
     history->tail = el->prev;
     if (history->tail) {
         history->tail->next = NULL;

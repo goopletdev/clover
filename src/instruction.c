@@ -119,6 +119,7 @@ clover_instruction* clover_instruction_from_brackets(
     int has_args = 0;
     const char* getc = bracket_contents + 1;
     clover_instruction* ci = (clover_instruction*)malloc(sizeof(clover_instruction));
+    printf("%c\n", c);
     switch (c) {
         case ':':
             if (*getc == '\0') {
@@ -204,16 +205,42 @@ clover_instruction* clover_instruction_from_macro(
     return ci;
 }
 
+clover_instruction* clover_instruction__add_space(clover_instruction* inst, int before) {
+    clover_instruction* space = (clover_instruction*)malloc(sizeof(clover_instruction));
+    space->type = ASCII;
+    space->u.inputText = (char*)malloc(sizeof(char) * 2);
+    space->u.inputText[0] = ' ';
+    space->u.inputText[1] = '\0';
+
+    if (before) {
+        space->next = inst;
+        space->prev = NULL;
+        if (inst) {
+            inst->prev = space;
+        }
+        return space;
+    } else {
+        // seek last instruction
+        clover_instruction* seek = inst;
+        while (seek->next) { seek = seek->next; }
+        inst->next = space;
+        space->prev = inst;
+        space->next = NULL;
+        return inst;
+    }
+}
+
 clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord chord) {
-    clover_instruction* inst;
+    clover_instruction* inst = NULL;
     clover_instruction* root = NULL;
     if (!dict || !dict->translations.entries) {
+        // sending just the literal stroke instead of a translation
         root = (clover_instruction*)malloc(sizeof(clover_instruction));
         root->type = ASCII;
         root->u.inputText = clover_pretty_chord(chord);
         root->next = NULL;
         root->prev = NULL;
-        return root;
+        return clover_instruction__add_space(root, 1);
     }
 
     if (dict->translations.entries[0][0] == '=') {
@@ -235,12 +262,17 @@ clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord
         } else if (c == '\\') {
             is_escaped = 1;
         } else if (c == '{') {
+            if (!inst) {
+                inst = (clover_instruction*)malloc(sizeof(clover_instruction));
+                root = inst;
+            }
             if (buffer_len) {
                 inst->type = ASCII;
                 inst->u.inputText = (char*)malloc(sizeof(char) * buffer_len);
                 strcpy(inst->u.inputText, buffer);
                 inst->next = (clover_instruction*)malloc(sizeof(clover_instruction));
                 inst = inst->next;
+                inst->next = NULL;
                 memset(buffer, '\0', buffer_len);
             }
         } else if (c == '}') {
@@ -252,5 +284,18 @@ clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord
             buffer[buffer_len++] = c;
         }
     }
-    return root;
+    if (buffer_len) {
+        if (!inst) {
+            inst = (clover_instruction*)malloc(sizeof(clover_instruction));
+            root = inst;
+        } else {
+            inst->next = (clover_instruction*)malloc(sizeof(clover_instruction));
+            inst = inst->next;
+        }
+        inst->type = ASCII;
+        inst->u.inputText = (char*)malloc(sizeof(char) * buffer_len);
+        strcpy(inst->u.inputText, buffer);
+        inst->next = NULL;
+    }
+    return clover_instruction__add_space(root, 1);
 }
