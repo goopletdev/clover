@@ -188,7 +188,8 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
             if (inst->type == DELETE) {
                 send_string(uinput_dev, inst->u.deletedText);
             } else if (inst->type == ASCII) {
-                char deletion_buffer[1024] = { '\b' };
+                char deletion_buffer[1024];
+                memset(deletion_buffer, '\b', 1024);
                 deletion_buffer[strlen(inst->u.inputText)] = '\0';
                 send_string(uinput_dev, deletion_buffer);
             } else {
@@ -201,6 +202,9 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
         free(translation);
     } else {
         clover_history_push(hist, el);
+        if (hist->len > 200) {
+            clover_history_free_element(clover_history_shift(hist));
+        }
         if (chord == ESCAPE) {
             // temporary escape check until commands are implemented
             printf("\r%sEscape sequence {PLOVER:TOGGLE}%s\n", COL_MAGENTA, COL_RESET);
