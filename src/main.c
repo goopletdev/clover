@@ -228,7 +228,7 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
                         break;
                     default:
                         printf("%sunrecognized instruction type%s\n", COL_MAGENTA, COL_RESET);
-                        exit(1);
+                        // exit(1);
                 }
                 inst = inst->next;
             }

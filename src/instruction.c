@@ -119,6 +119,15 @@ clover_instruction* clover_instruction_from_brackets(
     int has_args = 0;
     const char* getc = bracket_contents + 1;
     clover_instruction* ci = (clover_instruction*)malloc(sizeof(clover_instruction));
+    /*
+     * temporary, before bracket commands are implemented:
+     */
+    ci->type = ASCII;
+    ci->u.inputText = (char*)malloc(sizeof(char) * (strlen(bracket_contents)));
+    strcpy(ci->u.inputText, bracket_contents);
+    return ci;
+    // end temporary pre-implementation hack thing
+
     printf("%c\n", c);
     switch (c) {
         case ':':
@@ -270,14 +279,13 @@ clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord
                 inst->type = ASCII;
                 inst->u.inputText = (char*)malloc(sizeof(char) * buffer_len);
                 strcpy(inst->u.inputText, buffer);
-                inst->next = (clover_instruction*)malloc(sizeof(clover_instruction));
-                inst = inst->next;
                 inst->next = NULL;
                 memset(buffer, '\0', buffer_len);
             }
         } else if (c == '}') {
-            inst->type = COMMAND;
-            clover_instruction_from_brackets(buffer);
+            inst->next = clover_instruction_from_brackets(buffer);
+            inst = inst->next;
+            inst->next = NULL;
             memset(buffer, '\0', buffer_len);
             buffer_len = 0;
         } else {
