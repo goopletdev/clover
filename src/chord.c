@@ -67,25 +67,7 @@ void clover_put_pretty_chord(clover_chord chord) {
 }
 
 int clover_chord_compare(clover_chord chord1, clover_chord chord2) {
-    int comparison;
-    for (clover_chord bitmask = 1; bitmask < STENO_MASK; bitmask <<= 1) {
-        if ((comparison = ((bitmask & chord1) - (bitmask & chord2)))) {
-            bitmask = STENO_MASK & ~((bitmask << 1) - 1);
-            if (comparison > 0) {
-                return bitmask & chord2 ? -1 : 1;
-            }
-            return bitmask & chord1 ? 1 : -1;
-        }
-    }
-    return 0;
-}
-
-/**
- * TODO: fix
- * i swear there's a way to make this work without a loop
- */
-int clover__chord_compare(clover_chord chord1, clover_chord chord2) {
-    unsigned int bitmask = (chord1 &= STENO_MASK) ^ (chord2 &= STENO_MASK);
+    unsigned int bitmask = (chord1 & STENO_MASK) ^ (chord2 & STENO_MASK);
     if (!bitmask) {
         return 0;
     }
@@ -93,35 +75,24 @@ int clover__chord_compare(clover_chord chord1, clover_chord chord2) {
 
     if ((int)(bitmask & chord1)) { 
         // chord1 has the earlier different value
-        if (~((bitmask << 1) - 1) & chord2) {
+        if ((bitmask - 1) & chord2) {
             // chord2 doesn't have subsequent keys. 
             // chord2 precedes chord1 in steno order.
             return 1;
         }
         // chord2 has subsequent keys.
-        // chord 2 follows chord1 in steno order.
+        // chord2 follows chord1 in steno order.
         return -1;
     } 
     // chord2 has the earlier different value
-    if (~((bitmask << 1) - 1) & chord1) {
+    if ((bitmask - 1) & chord1) {
         // chord1 doesn't have subsequent keys.
         // chord1 precedes chord2 in steno order.
         return -1;
     }
-    // chord1 has subsequent keyskeys.
-    // chord1 precedes 
+    // chord1 has subsequent keys.
+    // chord1 follows chord2 in steno order.
     return 1;
-}
-
-int clover___chord_compare(clover_chord chord1, clover_chord chord2) {
-    unsigned int bitmask = (chord1 &= STENO_MASK) ^ (chord2 &= STENO_MASK);
-    if (!(bitmask &= ~(bitmask - 1))) {
-        return 0;
-    }
-    if (bitmask & chord1) {
-        return ~(bitmask - 1) & chord2 ? 1 : -1;
-    }
-    return ~(bitmask - 1) & chord1 ? -1 : 1;
 }
 
 int clover__steno_index_of(char value, int start) {

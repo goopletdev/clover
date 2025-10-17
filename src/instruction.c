@@ -122,8 +122,9 @@ clover_instruction* clover_instruction_from_brackets(
     /*
      * temporary, before bracket commands are implemented:
      */
+    printf("bracket contents: [%s]\n", bracket_contents);
     ci->type = ASCII;
-    ci->u.inputText = (char*)malloc(sizeof(char) * (strlen(bracket_contents)));
+    ci->u.inputText = (char*)malloc(sizeof(char) * (strlen(bracket_contents) + 1));
     strcpy(ci->u.inputText, bracket_contents);
     return ci;
     // end temporary pre-implementation hack thing

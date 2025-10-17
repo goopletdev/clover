@@ -186,8 +186,10 @@ void clover__send_chord(struct libevdev_uinput* uinput_dev, clover_chord chord, 
         while (inst->next) { inst = inst->next; }
         while (inst) {
             if (inst->type == DELETE) {
+                printf("undoing deleted text: [%s]\n", inst->u.deletedText);
                 send_string(uinput_dev, inst->u.deletedText);
             } else if (inst->type == ASCII) {
+                printf("undoing input text: [%s]\n", inst->u.inputText);
                 char deletion_buffer[1024];
                 memset(deletion_buffer, '\b', 1024);
                 deletion_buffer[strlen(inst->u.inputText)] = '\0';
