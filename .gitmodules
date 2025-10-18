@@ -7,3 +7,6 @@
 [submodule "lib/silly-string"]
 	path = lib/silly-string
 	url = https://github.com/goopletdev/silly-string.git
+[submodule "lib/doubly-linked-list"]
+	path = lib/doubly-linked-list
+	url = https://github.com/goopletdev/doubly-linked-list.git

@@ -44,6 +44,13 @@ SILLY_INC = $(SILLY_DIR)/src
 SILLY_DEP = $(DEPDIR)/silly-string.d
 SILLY_OBJ = $(OBJDIR)/silly-string.o
 
+# doubly linked list data structure
+DUB_LL_DIR = $(LIBDIR)/doubly-linked-list
+DUB_LL_SRC = $(DUB_LL_DIR)/src/gd-dll.c
+DUB_LL_INC = $(DUB_LL_DIR)/src
+DUB_LL_DEP = $(DEPDIR)/gd-dll.d
+DUB_LL_OBJ = $(OBJDIR)/gd-dll.o
+
 # #####################
 # # find source files #
 # #####################
@@ -61,6 +68,7 @@ TEST_BINARIES = $(patsubst $(TESTDIR)/%.c,$(TESTBINDIR)/%,$(TEST_SOURCES))
 
 OBJECTS += $(TOML_OBJ)
 OBJECTS += $(SILLY_OBJ)
+OBJECTS += $(DUB_LL_OBJ)
 
 # ##################
 # # compiler flags #
@@ -69,6 +77,7 @@ OBJECTS += $(SILLY_OBJ)
 CFLAGS += -I$(INCDIR) $(shell pkg-config --cflags $(PKGS))
 CFLAGS += -I$(TOML_INC)
 CFLAGS += -I$(SILLY_INC)
+CFLAGS += -I$(DUB_LL_INC)
 
 # conventional variable for linker flags:
 # shell command gets library linking flags for packages
@@ -126,6 +135,11 @@ $(SILLY_OBJ): $(SILLY_SRC) | $(OBJDIR)
 	@mkdir -p $(dir $@)
 	@mkdir -p $(dir $(SILLY_DEP))
 	$(CC) $(CFLAGS) -MMD -MP -MF $(SILLY_DEP) -c $< -o $@
+
+$(DUB_LL_OBJ): $(DUB_LL_SRC) | $(OBJDIR)
+	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $(DUB_LL_DEP))
+	$(CC) $(CFLAGS) -MMD -MP -MF $(DUB_LL_DEP) -c $< -o $@
 
 test-build: $(TEST_BINARIES)
 
