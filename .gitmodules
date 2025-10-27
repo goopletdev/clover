@@ -10,3 +10,6 @@
 [submodule "lib/doubly-linked-list"]
 	path = lib/doubly-linked-list
 	url = https://github.com/goopletdev/doubly-linked-list.git
+[submodule "lib/gd"]
+	path = lib/gd
+	url = https://github.com/goopletdev/gd.git
