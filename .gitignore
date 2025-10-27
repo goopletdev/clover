@@ -14,3 +14,11 @@ build/
 
 # config file:
 config.toml
+
+#refactor stuff:
+REFACTOR/build/
+REFACTOR/dictionaries/
+!REFACTOR/dictionaries/test-dictionary.json
+!REFACTOR/dictionaries/test-dictionary-2.json
+REFACTOR/lib/
+
