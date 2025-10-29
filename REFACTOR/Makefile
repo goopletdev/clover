@@ -17,7 +17,7 @@ DEPDIR = $(BUILDDIR)/deps
 ##########################
 ###### GD LIBRARIES ######
 ##########################
-GD_DIR = $(LIBDIR)/c-data-structures
+GD_DIR = $(LIBDIR)/gd
 GD_SRC = $(GD_DIR)/src
 GD_INC = $(GD_DIR)/include
 

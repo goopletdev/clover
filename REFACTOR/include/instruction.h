@@ -5,7 +5,8 @@
 #include "dict.h"
 #include "gd-trie.h"
 #include "gd-doubly-linked-list.h"
-#include "history.h"
+
+#include <stdint.h> // uintptr_t
 
 typedef enum {
     UNKNOWN_MACRO,
@@ -34,19 +35,44 @@ typedef enum {
     NONE, STRING, COMMAND, MACRO, META, DELETE, SPACE,
 } clover_instruction_type;
 
-typedef struct gd_dll clover_instruction;
+typedef gd_dll clover_instruction;
 
-struct clover_instruction_node {
+typedef struct clover__instruction_nodeT clover_instruction_node;
+struct clover__instruction_nodeT {
     clover_instruction_type type;
     union {
         char* string;
         clover_macro macro;
         clover_command command;
         char* meta;
-        char* delete;
     } u;
     char* args;
 };
+
+typedef struct clover__history_elementT clover_history_element;
+struct clover__history_elementT {
+    clover_instruction* instruction;
+    clover_dict* source_dict;
+};
+
+typedef gd_dll clover_history;
+
+typedef struct clover__settingsT clover_settings;
+struct clover__settingsT {
+    char* space_mode;
+    int space_before;
+};
+
+typedef struct clover__instanceT clover_instance;
+struct clover__instanceT {
+    clover_history* history;
+    clover_settings* settings;
+    gd_trie* macros;
+    gd_trie* commands;
+};
+
+clover_instance* clover_instance_init(void);
+void clover_instance_free(clover_instance* i);
 
 /**
  * initialize trie data structure for quick command and macro lookup
@@ -54,16 +80,16 @@ struct clover_instruction_node {
 gd_trie* clover_instruction_init_macros(void);
 gd_trie* clover_instruction_init_commands(void);
 
+void clover_instruction_free_node(void* instruction);
 void clover_instruction_free(clover_instruction* inst);
-
-clover_macro clover_instruction_lookup_macro(char* translation);
-clover_command clover_instruction_lookup_command(char* translation);
+void clover_history_free_element(void* el);
+void clover_history_free(clover_history* hist);
 
 clover_instruction_node* clover_instruction_from_brackets(
         const char* bracket_contents);
 clover_instruction_node* clover_instruction_from_macro(
-        const char* macro_contents);
+        const char* macro_contents, gd_trie* macro_trie);
 
-clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_chord chord);
+clover_instruction* clover_instruction_from_dict(clover_dict* dict, clover_instance* instance);
 
 #endif // CLOVER_INSTRUCTION_H
