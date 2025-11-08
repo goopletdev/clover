@@ -63,6 +63,7 @@ clover_instance* clover_instance_init(void) {
 
     c->macros = clover_instruction_init_macros();
     c->commands = clover_instruction_init_commands();
+    return c;
 }
 
 void clover_instruction_free_node(void* instruction) {
@@ -121,7 +122,7 @@ char clover__instruction_parse_escaped_char(char c) {
 }
 
 int clover__instruction_trie_lookup(gd_trie* t, char* translation) {
-    return (int)(uintptr_t)gd_trie_get_ci-i(t, translation);
+    return (int)(uintptr_t)gd_trie_get_ci(t, translation);
 }
 
 clover_instruction_node* clover_instruction_from_brackets(
@@ -154,11 +155,14 @@ clover_instruction_node* clover_instruction_from_macro(
     char c;
     const char* getc = macro_contents;
     clover_instruction_node* ci = (clover_instruction_node*)malloc(sizeof(clover_instruction_node));
+    if (!ci) {
+        exit(1);
+    }
     ci->type = MACRO;
     while ((c = *(getc++)) && c != ':') {
         buffer[buffer_len++] = c;
     }
-    ci->u.macro = clover__instruction_trie_lookup(macro_trie, buffer);
+    ci->u.macro = (clover_macro)clover__instruction_trie_lookup(macro_trie, buffer);
     if (c) {
         ci->args = (char*)malloc(strlen(getc) * sizeof(char));
         strcpy(ci->args, getc);
